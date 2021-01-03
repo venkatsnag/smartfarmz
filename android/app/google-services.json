@@ -1,0 +1,40 @@
+{
+    "project_info": {
+      "project_number": "892881302618",
+      "firebase_url": "https://farmersfriend-4595f.firebaseio.com",
+      "project_id": "farmersfriend-4595f",
+      "storage_bucket": "farmersfriend-4595f.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:892881302618:android:406032cc76ae4524f35463",
+          "android_client_info": {
+            "package_name": "com.happyfarming.SmartFarmZ"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "892881302618-ri8lln45mquc0pt9odd2lvdnm33q5j20.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyDxler4cLUSftsbW0vRKjZZLjb5vsxYHvY"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "892881302618-ri8lln45mquc0pt9odd2lvdnm33q5j20.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
