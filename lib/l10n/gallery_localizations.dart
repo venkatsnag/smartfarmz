@@ -246,6 +246,30 @@ abstract class GalleryLocalizations {
 //  Title for cropExpenses.
   String get landMachineryTitle;
 
+  //  Title for allMachineryForSale.
+  String get allMachineryForSale;
+
+   //  Title for allMachineryForRental.
+  String get allMachineryForRental;
+ 
+
+  //  Title for cropforSaleUser.
+  String get mymachineryForSale;
+
+  //  Title for mymachineryForRental.
+  String get mymachineryForRental;
+
+  //  Title for omachineryForRental.
+  String get nomachineryForSale;
+
+    //  Title for allSaleAndRentalAnouncement.
+  String get mySaleAndRentalAnouncement;
+  
+
+  //  Title for omachineryForRental.
+  String get nomachineryForRental;
+  
+
   //  Title for cropExpenses.
   String get cropMachineryTitle;
 

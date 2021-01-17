@@ -20,6 +20,8 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:share/share.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import '../providers/auth.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+
 
 class CropDetailScreen extends StatefulWidget {
 
@@ -51,11 +53,13 @@ int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    List<String> networkImages;
+    var imageUrls;
     final authData = Provider.of<Auth>(context, listen: false);
     final cropid = ModalRoute.of(context).settings.arguments as String;
     final loadedCrops = Provider.of<Crops>(context).findById(cropid);
-  
-
+    loadedCrops?.imageUrl?.isEmpty ?? true ? loadedCrops.imageUrl : imageUrls = loadedCrops.imageUrl.split(",") ;
+    networkImages = imageUrls;
     
     /* var imageUrl = loadedCrops.imageUrl;
      dynamic img;
@@ -89,21 +93,30 @@ authData.userType == 'Farmer' ?
             ),
             
             
-            body: new SingleChildScrollView(
+            body: 
+            new SingleChildScrollView(
                         child: new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-               
-            loadedCrops.imageUrl?.isEmpty ? 
+Container(
+              width:  500,
+              height: 350,
+    child:
+    loadedCrops?.imageUrl?.isEmpty ?? true ?
             Image.network('https://images.unsplash.com/photo-1572827137848-4d7955eb93d6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80 750w', fit:BoxFit.cover) :
-                Image.network(loadedCrops.imageUrl,
-                width: 600,            
-                height: 240,
-              fit: BoxFit.cover,
-              ),
+             
+            new Swiper(
+        itemBuilder: (BuildContext context,int index){
+          return new Image.network(networkImages[index],fit: BoxFit.fill,);
+        },
+        itemCount:networkImages.length,
+        pagination: new SwiperPagination(),
+        control: new SwiperControl(),
+      ),
+      ),
       
-               Padding(
+      Padding(
                  padding: const EdgeInsets.all(8.0),
                  child: Container(
                    margin: EdgeInsets.all(10),
@@ -237,26 +250,17 @@ authData.userType == 'Farmer' ?
                    ]),
                  
                ])
-              /*  Container(
-                 child: Banner(child: Container
-                 (child: Center(child: Text('Todays Market Price at Guimalkapur Market is Rs.12'),)
-                 ),
-                 message: "message",
-                 textDirection: TextDirection.ltr,
-                 location: BannerLocation.bottomEnd,
-                 ),
-                 ), */],
-               
-               ),),
+
+      ])),
+   
+           
                 
                  bottomNavigationBar: BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 4.0,
       child: _buildTabsBar(context),
       
-     /*  new Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,), */
+     
       
       ), 
           persistentFooterButtons: [
@@ -391,22 +395,7 @@ Navigator.of(context).pushNamed(PesticidesOverviewScreen.routeName, arguments: {
             width: 500,
             child: Text('User Type'),
             ),
-/*            Container(
-            width: 500,
-           child: 
-           Column(
-                   
-                             children: <Widget>[
-                               DropdownButton(
-                                 
-              hint: Text('Choose User Type'), // Not necessary for Option 1
-              value: _selectedUserType,
-              onChanged: (dynamic newValue) {
-                setState(() {
-                  _selectedUserType = newValue;
-                  return userType = _selectedUserType;
-                });
-              }, */
+
             Container(
   padding: EdgeInsets.symmetric(horizontal: 20),
   child: FormField<String>(
@@ -442,15 +431,7 @@ Navigator.of(context).pushNamed(PesticidesOverviewScreen.routeName, arguments: {
             ),
                              ],
                            ),
-                           /*  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    shape: BoxShape.rectangle,
-                    border: Border.all(
-                      color: Colors.blue,
-                      width: 1,
-                    )),
-                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
-                      margin: EdgeInsets.all(10.0), */
+                         
                            
                   
                 ),

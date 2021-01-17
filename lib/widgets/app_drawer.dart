@@ -5,6 +5,7 @@ import '../screens/user_crops_screen.dart';
 import '../screens/user_fields_screen.dart';
 import '../screens/reset_password.dart';
 import '../screens/user_crops_sale_screen.dart';
+import '../screens/user_machinary_forSaleRental_screen.dart';
 import '../providers/auth.dart';
 import '../providers/user_profiles.dart';
 
@@ -112,6 +113,17 @@ class AppDrwaer extends StatelessWidget {
            title: Text('Manage Lands'),
            onTap: (){
              Navigator.of(context).pushNamed(UserFieldsScreen.routeName);
+
+           },
+         ) : SizedBox(),
+
+         Divider(),
+           userType == 'Farmer'?
+         ListTile(
+           leading: Icon(Icons.edit),
+           title: Text('Manage Machinery sales/Rental'),
+           onTap: (){
+             Navigator.of(context).pushNamed(UserMachinerySaleRentalScreen.routeName);
 
            },
          ) : SizedBox(),

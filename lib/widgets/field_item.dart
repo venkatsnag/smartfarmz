@@ -23,10 +23,18 @@ class FieldItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final field = Provider.of<Field>(context);
+    var imageUrls;
+     List<String> networkImages;
+ field?.imageUrl?.isEmpty ?? true ? field.imageUrl : imageUrls = field.imageUrl.split(",") ;
+
+   networkImages = imageUrls;
     
     final authData = Provider.of<Auth>(context, listen: false);
     return GridTile(
-      child: GestureDetector
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      clipBehavior: Clip.antiAlias,
+      child:GestureDetector
       (
         onTap: (){
           Navigator.of(context).pushNamed(FieldDetailScreen.routeName, 
@@ -35,14 +43,20 @@ class FieldItem extends StatelessWidget {
           );
         },
         child: 
-        field.imageUrl?.isEmpty ?
+        field?.imageUrl?.isEmpty ?? true ?
         Image.network('https://images.unsplash.com/photo-1534940519139-f860fb3c6e38?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80 747w', fit:BoxFit.cover)
       :
-    Image.network(field.imageUrl, fit:BoxFit.cover,
+    Image.network(networkImages[0], fit:BoxFit.cover,
   
       ),
-     ),
-    footer: GridTileBar(
+     ),),
+         footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:GridTileBar(
       backgroundColor: Colors.black54,
       /* leading: Consumer<Crop>(
               builder: (ctx, crop, _) => IconButton(icon: 
@@ -58,7 +72,7 @@ class FieldItem extends StatelessWidget {
       
       ),
      
-      ),
+      ),),
      );
   }
 }

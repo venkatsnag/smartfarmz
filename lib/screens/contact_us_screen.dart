@@ -173,7 +173,7 @@ final loadedUser = Provider.of<UserProfiles>(context, listen: false);
           
           ),
           onPressed: (){
-            Navigator.pushNamed(context, '/guest_home_screen');
+            Navigator.pushNamed(context, '/main_home_screen');
           },), 
           Text('Home',
           style: TextStyle(color: Colors.white),)

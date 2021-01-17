@@ -1,27 +1,26 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/fields.dart';
-import '../widgets/user_field_item.dart';
+import '../providers/machinery.dart';
+import '../widgets/user_machinery_forSaleRental.dart';
 import '../widgets/app_drawer.dart';
-import '../screens/edit_field_screen.dart';
+import '../screens/edit_crop_screen.dart';
 import '../l10n/gallery_localizations.dart';
 import 'package:flutter/scheduler.dart';
 import '../providers/auth.dart';
 
-class UserFieldsScreen extends StatelessWidget {
-  static const String routeName = '/user-lands';
+class UserMachinerySaleRentalScreen extends StatelessWidget {
+  static const String routeName = '/user-machinery-ForsaleRental';
 
-  Future<void> _refreshCrops(BuildContext context) async {
-await Provider.of<Fields>(context, listen: false).fetchfields(true);
+  Future<void> _refreshMachinerySalesRental(BuildContext context) async {
+await Provider.of<Machinery>(context, listen: false).fetchUserMachineryForSaleRental();
   }
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshMachinerySalesRental(context));
     //final cropsData = Provider.of<Crops>(context);
     return  Consumer<Auth>
       (builder: (ctx, auth, _) => Scaffold(appBar: AppBar(
-      title: const Text('Your Lands'),
+      title: const Text('Your Machinery sale/Rental anouncements'),
 /*       actions: <Widget>[
         IconButton(icon: Icon(Icons.add), onPressed: (){
           Navigator.of(context).pushNamed(EditCropScreen.routeName);
@@ -30,20 +29,21 @@ await Provider.of<Fields>(context, listen: false).fetchfields(true);
     ),
     //drawer: AppDrwaer(),
     body: auth.isAuth ?  FutureBuilder(
-        future: _refreshCrops(context),
-          builder: (ctx, snapshot) => 
-          snapshot.connectionState == ConnectionState.waiting ? Center(
+        future: _refreshMachinerySalesRental(context),
+          builder: (ctx, snapshot) => snapshot.connectionState == ConnectionState.waiting ? Center(
             child: CircularProgressIndicator(),) : 
             RefreshIndicator(
-        onRefresh: () => _refreshCrops(context),
-            child: Consumer<Fields>(
-                          builder: (ctx,cropsData, _ ) => Padding(padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(itemCount: cropsData.items.length , itemBuilder: (_, i) => Column(
+        onRefresh: () => _refreshMachinerySalesRental(context),
+            child: Consumer<Machinery>(
+                          builder: (ctx,machinerySalesRentalData, _ ) => Padding(padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(itemCount: machinerySalesRentalData.items.length , itemBuilder: (_, i) => Column(
           children: <Widget>[
-              UserFieldItem(
-                cropsData.items[i].id,
-                cropsData.items[i].title, 
-                cropsData.items[i].imageUrl),
+              UserMachineryForSaleRentalItem(
+                machinerySalesRentalData.items[i].id,
+                machinerySalesRentalData.items[i].type, 
+                machinerySalesRentalData.items[i].forSale.toString(), 
+                machinerySalesRentalData.items[i].forRental.toString(), 
+                machinerySalesRentalData.items[i].imageUrl),
               Divider(),
           ],
         ),),

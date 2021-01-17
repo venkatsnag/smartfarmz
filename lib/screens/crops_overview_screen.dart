@@ -10,7 +10,7 @@ import '../providers/crops.dart';
 import '../providers/auth.dart';
 import 'package:flutter/scheduler.dart';
 import '../screens/login_page.dart';
-import '../screens/splash_screen.dart';
+import '../screens/main_home_screen.dart';
 import '../providers/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,7 +36,7 @@ var _isInit = true;
 var _isLoading = false;
   @override
   void initState() {
-     //_refreshCrops(context);
+     _refreshCrops(context);
        
     super.initState();
   }
@@ -67,7 +67,7 @@ var _isLoading = false;
   @override
   Widget build(BuildContext context) {
     //Call refresh crops after loggin in.
-   WidgetsBinding.instance.addPostFrameCallback((_) => _refreshCrops(context));
+   //WidgetsBinding.instance.addPostFrameCallback((_) => _refreshCrops(context));
     final authData = Provider.of<Auth>(context, listen: false);
 
     // These delegates make sure that the localization data for the proper language is loaded
@@ -96,7 +96,7 @@ var _isLoading = false;
     floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: new Visibility( 
-        visible: true,
+        visible: authData.userType == 'Farmer' ? true : false,
        child: auth.isAuth ?
        FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
@@ -139,7 +139,7 @@ var _isLoading = false;
           
           ),
           onPressed: (){
-            Navigator.pushNamed(context, '/farmer_home_screen');
+            Navigator.pushNamed(context, '/main_home_screen');
           },),
           Text('Home',
           style: TextStyle(color: Colors.white),)
@@ -221,7 +221,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
-              Navigator.pushReplacementNamed(context, '/guest_home_screen');
+              Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),
       ],

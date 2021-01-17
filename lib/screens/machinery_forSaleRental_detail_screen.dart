@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import '../widgets/user_crop_item.dart';
-import '../providers/crop.dart';
-import './edit_expense_screen.dart';
 import 'package:provider/provider.dart';
-import 'add_expense_screen.dart';
-import '../providers/crops.dart';
-import './expenses_overview_screen.dart';
-
-import './pesticides_overview_screen.dart';
-import './sales_overview_screen.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import '../providers/machinery.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import '../providers/apiClass.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,15 +8,15 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 
 
-class CropForSaleDetailScreen extends StatefulWidget {
+class MachineryForSaleRentalDetailScreen extends StatefulWidget {
 
-  static const routeName = '/crop-for-sale-detail';
+  static const routeName = '/machinery-for-sale-detail';
 
   @override
-  _CropForSaleDetailScreenState createState() => _CropForSaleDetailScreenState();
+  _MachineryForSaleRentalDetailScreenState createState() => _MachineryForSaleRentalDetailScreenState();
 }
 
-class _CropForSaleDetailScreenState extends State<CropForSaleDetailScreen> {
+class _MachineryForSaleRentalDetailScreenState extends State<MachineryForSaleRentalDetailScreen> {
 
 int selectedIndex = 0;
 void launchWhatsApp(
@@ -48,14 +37,13 @@ void launchWhatsApp(
     throw 'Could not launch ${url()}';
   }
 }
-
   @override
   Widget build(BuildContext context) {
     List<String> networkImages;
     var imageUrls;
-    final cropid = ModalRoute.of(context).settings.arguments as String;
-    final loadedCrops = Provider.of<Crops>(context).findById(cropid);
-    loadedCrops?.imageUrl?.isEmpty ?? true ? loadedCrops.imageUrl : imageUrls = loadedCrops.imageUrl.split(",") ;
+    final id = ModalRoute.of(context).settings.arguments as String;
+    final loadedMachinery = Provider.of<Machinery>(context).findById(id);
+    loadedMachinery?.imageUrl?.isEmpty ?? true ? loadedMachinery.imageUrl : imageUrls = loadedMachinery.imageUrl.split(",") ;
     networkImages = imageUrls;
     /* var imageUrl = loadedCrops.imageUrl;
      dynamic img;
@@ -68,7 +56,7 @@ void launchWhatsApp(
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(loadedCrops.title),
+            title: Text(loadedMachinery.type),
             
             ),
             
@@ -83,8 +71,8 @@ void launchWhatsApp(
               width:  500,
               height: 350,
     child:  
-            loadedCrops?.imageUrl?.isEmpty ?? true ?
-            Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.cover) :
+            loadedMachinery?.imageUrl?.isEmpty ?? true ?
+            Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.contain) :
                  new Swiper(
         itemBuilder: (BuildContext context,int index){
           return new Image.network(networkImages[index],fit: BoxFit.fill,);
@@ -98,7 +86,7 @@ void launchWhatsApp(
                  padding: const EdgeInsets.all(8.0),
                  child: Container(
                    margin: EdgeInsets.all(10),
-                   child: Text('${loadedCrops.title}'),
+                   child: Text('${loadedMachinery.type}'),
                    
                    
                  ),
@@ -109,48 +97,48 @@ void launchWhatsApp(
                  Column(children: <Widget>[
                     RichText(
                      text: TextSpan(
-                      text: 'Seed Variety : ',
+                      text: 'Brand : ',
                       
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
       
-                  TextSpan(text: ' ${loadedCrops.seedVariety}'),
+                  TextSpan(text: ' ${loadedMachinery.brand}'),
                   ],
                   ),
                   ),
                    RichText(
                      text: TextSpan(
-                      text: 'Farmer : ',
+                      text: 'Model : ',
                       
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
       
-                  TextSpan(text: ' ${loadedCrops.farmer}')
+                  TextSpan(text: ' ${loadedMachinery.model}')
                   ],
                   ),
                   ),
                   
                   RichText(
                      text: TextSpan(
-                      text: 'Crop Method : ',
+                      text: 'Year : ',
                       
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
       
-                  TextSpan(text: ' ${loadedCrops.cropMethod}'),
+                  TextSpan(text: ' ${loadedMachinery.year}'),
                   ],
                   ),
                   ),
 
-
+                    loadedMachinery.forSale == 1 ? 
                           RichText(
                      text: TextSpan(
-                      text: 'Price : ',
+                      text: 'salePrice : ',
                       
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
                     TextSpan(text: '₹ '),
-                  TextSpan(text: ' ${loadedCrops.price}'),
+                  TextSpan(text: ' ${loadedMachinery.salePrice}'),
                     TextSpan(
       text: 'Per ',
       style: TextStyle(
@@ -159,7 +147,33 @@ void launchWhatsApp(
       ),
     ), 
      TextSpan(
-      text: ' ${loadedCrops.salesUnits}',
+      text: ' ${loadedMachinery.units}',
+      style: TextStyle(
+        fontSize: 15,
+        color: Colors.black.withOpacity(0.6),
+      ),
+    ),
+                  ],
+                  ),
+                  ) :
+
+                  RichText(
+                     text: TextSpan(
+                      text: 'Rental Price : ',
+                      
+                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
+                    children: <TextSpan>[
+                    TextSpan(text: '₹ '),
+                  TextSpan(text: ' ${loadedMachinery.rentPrice}'),
+                    TextSpan(
+      text: 'Per ',
+      style: TextStyle(
+        fontSize: 15,
+        color: Colors.black.withOpacity(0.6),
+      ),
+    ), 
+     TextSpan(
+      text: ' ${loadedMachinery.units}',
       style: TextStyle(
         fontSize: 15,
         color: Colors.black.withOpacity(0.6),
@@ -169,25 +183,7 @@ void launchWhatsApp(
                   ),
                   ),
 
-                  RichText(
-                     text: TextSpan(
-                      text: 'Available Qty: ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-                    
-                  TextSpan(text: ' ${loadedCrops.quantityForSale}'),
-                   
-     TextSpan(
-      text: ' ${loadedCrops.quantityUnits}',
-      style: TextStyle(
-        fontSize: 15,
-        color: Colors.black.withOpacity(0.6),
-      ),
-    ),
-                  ],
-                  ),
-                  ),
+        
 
                     RichText(
                      text: TextSpan(
@@ -196,21 +192,22 @@ void launchWhatsApp(
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
       
-                  TextSpan(text: ' ${loadedCrops.description}'),
+                  TextSpan(text: ' ${loadedMachinery.description}'),
                   ],
                   ),
                   ),
  RichText(
                      text: TextSpan(
-                      text: 'Crop Location : ',
+                      text: 'Condition of Machinery : ',
                       
                     style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
                     children: <TextSpan>[
       
-                  TextSpan(text: ' ${loadedCrops.location}'),
+                  TextSpan(text: ' ${loadedMachinery.machCondition}'),
                   ],
                   ),
                   ),
+
                   Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: <Widget>[
@@ -222,7 +219,7 @@ void launchWhatsApp(
       textColor: Colors.green,
       padding: EdgeInsets.all(8.0),
       onPressed: () {
-         launchWhatsApp(phone: "${loadedCrops.sellerContact}", message: "Hello");
+         launchWhatsApp(phone: "${loadedMachinery.sellerContact}", message: "Hello");
       },
       child: Text(
         "WhatsApp Seller",
@@ -234,47 +231,20 @@ void launchWhatsApp(
     ],
     )
                   
+                  
                    ]
                    ),
                  
                ]
                )
-              /*  Container(
-                 child: Banner(child: Container
-                 (child: Center(child: Text('Todays Market Price at Guimalkapur Market is Rs.12'),)
-                 ),
-                 message: "message",
-                 textDirection: TextDirection.ltr,
-                 location: BannerLocation.bottomEnd,
-                 ),
-                 ), */],
+            ],
                
-               ),
-               ),
+               ),),
                 
                
     );
     
   }
- void onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-      final cropid = ModalRoute.of(context).settings.arguments as String;
-    final loadedCrops = Provider.of<Crops>(context, listen: false).findById(cropid);
-      if(selectedIndex == 0){
-Navigator.of(context).pushNamed(ExpensesOverviewScreen.routeName, arguments: {'id':loadedCrops.id, 'type':'crops'});
-      }
-      if(selectedIndex == 1){
-Navigator.of(context).pushNamed(PesticidesOverviewScreen.routeName, arguments: {'id':loadedCrops.id, 'type':'crops'});
-      }
-      if(selectedIndex == 2){
-        Navigator.of(context).pushNamed(SalesOverviewScreen.routeName, arguments: {'id':loadedCrops.id, 'type':'crops'});
-      }
-      
-      else(dynamic error){
 
-      };
-    });
-  }
 }
 

@@ -11,6 +11,7 @@ import '../providers/auth.dart';
 import 'package:provider/provider.dart';
 import '../utils/bubble_indication_painter.dart';
 import './user_profile_screen.dart';
+import './main_home_screen.dart';
 
 enum AuthMode { Signup, Login }
 class AuthCard extends StatefulWidget {
@@ -93,7 +94,7 @@ Future<void> _showErrorDialog(String message){
   }
 
   Future<void> _showSucessDialog(String message){
-    final authData = Provider.of<Auth>(context, listen: false);
+    
   return showDialog(context: context, 
      builder: (ctx) => AlertDialog(
       title: Text('Sucess'), 
@@ -103,12 +104,13 @@ Future<void> _showErrorDialog(String message){
          
           child: Text('Okay'),
            onPressed: (){
-               authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?  
+              /*  authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?  
             Navigator.of(ctx).pushReplacementNamed('/farmer_home_screen') 
             : authData.userType == 'Buyer' ? 
            Navigator.of(ctx).pushReplacementNamed('/buyer_home_screen'): Navigator.pushNamed(context, '/investor_home_screen');
-           
-             //Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) => GuestHomeScreen()));
+            */
+            Navigator.of(ctx).pushReplacementNamed('/main_home_screen');
+           // Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) => MainHomePage()));
            setState(() {
            //Navigator.pushReplacementNamed(ctx, '/user-profile-screen', arguments: authData.userId);
            
@@ -124,7 +126,7 @@ Future<void> _showErrorDialog(String message){
   }
 
     Future<void> _showSucessLoginDialog(String message){
-      final authData = Provider.of<Auth>(context, listen: false);
+      
   return showDialog(context: context, 
      builder: (ctx) => AlertDialog(
       title: Text('Sucess'), 
@@ -137,12 +139,9 @@ Future<void> _showErrorDialog(String message){
           
            onPressed: (){
             
-            authData.userType == 'Farmer' ?  
-            Navigator.of(ctx).pushReplacementNamed('/farmer_home_screen') 
-            : authData.userType == 'Buyer' ? 
-           Navigator.of(ctx).pushReplacementNamed('/buyer_home_screen'): Navigator.pushNamed(context, '/investor_home_screen');
-           //Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) => GuestHomeScreen()));
-      /*      setState(() {
+            
+            Navigator.of(ctx).pushReplacementNamed('/main_home_screen');
+             /*      setState(() {
       _isLoading = false;
     });  */
              }, 
@@ -211,14 +210,14 @@ if (_authMode == AuthMode.Login) {
     
       );
        
-     /*   var message = 'You have sucessfully logged in.';
+     var message = 'You have sucessfully logged in.';
      _showSucessLoginDialog(message);
- */
- auth['userType'] == 'Farmer' ?  
+ 
+ /* auth['userType'] == 'Farmer' ?  
             Navigator.pushNamed(context, '/farmer_home_screen') 
             : auth['userType'] == 'Buyer' ? 
            Navigator.pushNamed(context, '/buyer_home_screen'): Navigator.pushNamed(context, '/investor_home_screen');
-          
+           */
   /* setState(() {
       
     

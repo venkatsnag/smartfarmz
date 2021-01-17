@@ -240,10 +240,10 @@ SizedBox(
                         children: <Widget>[
                           // table header items
                          SizedBox(
-      width: 75, // hard coding child width
+      width: 90, // hard coding child width
       child: const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:  Padding(
@@ -257,10 +257,10 @@ SizedBox(
     ),
                    ), 
                   SizedBox(
-      width: 75, // hard coding child width
+      width: 90, // hard coding child width
       child:  const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:  
@@ -275,15 +275,15 @@ SizedBox(
                   ),),),),
                    
                    SizedBox(
-      width: 80, // hard coding child width
+      width: 90, // hard coding child width
       child:
                     const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:  Padding(
-  padding: const EdgeInsets.all(15.0),
+  padding: const EdgeInsets.all(1.0),
                   child: Text("City",
                   style: TextStyle(
                   color: Colors.black,
@@ -296,11 +296,11 @@ SizedBox(
       child:
                    const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:   Padding(
-  padding: const EdgeInsets.all(4.0),
+  padding: const EdgeInsets.all(3.0),
                   child: Text("Price",
                   style: TextStyle(
                   color: Colors.black,
@@ -309,15 +309,15 @@ SizedBox(
                   ),),)),
 
                    SizedBox(
-      width: 40, // hard coding child width
+      width: 50, // hard coding child width
       child:
                    const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:   Padding(
-  padding: const EdgeInsets.all(4.0),
+  padding: const EdgeInsets.all(3.0),
                   child: Text("Qty",
                   style: TextStyle(
                   color: Colors.black,
@@ -325,15 +325,15 @@ SizedBox(
                   ),
                   ),),)),
                    SizedBox(
-      width: 40, // hard coding child width
+      width: 50, // hard coding child width
       child:
                   const DecoratedBox(
     decoration: const BoxDecoration(
-      color: Colors.greenAccent
+      color: Colors.white10
       
     ),
     child:   Padding(
-  padding: const EdgeInsets.all(4.0),
+  padding: const EdgeInsets.all(3.0),
                   child: Text("Unit",
                   style: TextStyle(
                   color: Colors.black,

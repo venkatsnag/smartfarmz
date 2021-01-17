@@ -71,10 +71,12 @@ class UserProfiles with ChangeNotifier {
   String authToken;
   final String userId;
   String userType;
+  String userFirstName;
+  String userMobile;
   String userEmail;
 
   UserProfiles(
-      this.authToken, this.userId, this.userType, this.userEmail, this._items);
+      this.authToken, this.userId, this.userType, this.userEmail, this.userFirstName, this.userMobile, this._items);
 
   List<UserProfieItem> get items {
     return [..._items];

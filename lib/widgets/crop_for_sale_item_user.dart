@@ -24,11 +24,19 @@ class CropsForSaleItemUser extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    var imageUrls;
     final crop = Provider.of<Crop>(context);
+    List<String> networkImages;
+     crop?.imageUrl?.isEmpty ?? true ? crop.imageUrl : imageUrls = crop.imageUrl.split(",") ;
+
+   networkImages = imageUrls;
     
     final authData = Provider.of<Auth>(context, listen: false);
     return GridTile(
       
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      clipBehavior: Clip.antiAlias,
       child: GestureDetector
       (
         onTap: (){
@@ -38,14 +46,20 @@ class CropsForSaleItemUser extends StatelessWidget {
           );
         },
         child: 
-        crop.imageUrl.isEmpty ?
-        Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.cover)
+          crop?.imageUrl?.isEmpty ?? true ?
+        Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.contain)
       :
-    Image.network(crop.imageUrl, fit:BoxFit.cover,
+    Image.network(networkImages[0], fit:BoxFit.cover,
   
       ),
-     ),
-     footer: GridTileBar(
+     ),),
+     footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:GridTileBar(
       backgroundColor: Colors.black54,
       
       /* leading: Consumer<Crop>(
@@ -114,7 +128,7 @@ class CropsForSaleItemUser extends StatelessWidget {
       ),
     ), */
 TextSpan(
-      text: 'Available Qty: ',
+      text: '\nAvailable Qty: ',
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
@@ -130,7 +144,7 @@ TextSpan(
   ],
 )
       ),),
-     ),); 
+     ),)); 
   }
 }
 

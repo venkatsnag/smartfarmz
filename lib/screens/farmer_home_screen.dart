@@ -10,51 +10,41 @@ import 'package:provider/provider.dart';
 import '../providers/user_profiles.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/auth.dart';
+import '../providers/apiClass.dart';
 
 
 class FarmerHomeScreen extends StatelessWidget {
   
 static const routeName = '/farmer_home_screen';
-  
-  const FarmerHomeScreen({Key key, this.type}) : super(key: key);
-
-  final FarmerHomeScreen type;
 
   
-  
-  List<_Photo> _photos(BuildContext context) {
-    return [
-      _Photo(
-        
-        assetName: 'assets/img/watermelon.jpg',
-        navi: '/crops-overview',
-        //title: Text(AppLocalizations.of(context).translate('crop_title'),),
-        //navi: Navigator.pushNamed(context, CropsOverviewScreen.routeName ),
-        title: GalleryLocalizations.of(context).myCropTitle,
-       // subtitle: GalleryLocalizations.of(context).placeFlowerMarket, 
-      ),
-     _Photo(
-        assetName: 'assets/img/orchads.jpg',
-        navi: '/crops-for-sale-overview-user',
-        title: GalleryLocalizations.of(context).myCropforSale,
-        /* subtitle: GalleryLocalizations.of(context).placeBronzeWorks, */
-      ),  
-     _Photo(
-        assetName: 'assets/img/land.jpg',
-        navi: '/fields-overview',
-        title: GalleryLocalizations.of(context).myLands,
-        subtitle: GalleryLocalizations.of(context).myLands,
-      ),
 
-      _Photo(
-        assetName: 'assets/img/buyer.png',
-        navi: '/all-farmers-overview',
-        title: GalleryLocalizations.of(context).allBuyers,
-        subtitle: GalleryLocalizations.of(context).allBuyers,
-      ), 
-       
-    ];
+   final apiurl = AppApi.api;
+ 
+
+  
+    Future<void> _showSelectionDialog(BuildContext context) {
+
+     // set up the button
+  Widget okButton = FlatButton(
+    child: Text("OK"),
+    onPressed: () {
+      Navigator.pushNamed(context, '/guest_home_screen');
+     },
+  );
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text(GalleryLocalizations.of(context).onlyFarmersTitle,),
+              content: Text(GalleryLocalizations.of(context).onlyFarmersText,),
+    actions: [
+      okButton,
+    ],);
+        });
   }
+  
   @override
   Widget build(BuildContext context) {
     //WidgetsBinding.instance.addPostFrameCallback((_) => _photos(context));
@@ -91,12 +81,215 @@ static const routeName = '/farmer_home_screen';
         crossAxisSpacing: 8,
         padding: const EdgeInsets.all(8),
         childAspectRatio: 1,
-        children: _photos(context).map<Widget>((photo) {
-          return _GridDemoPhotoItem(
-            photo: photo,
-            
-          );
-        }).toList(),
+        children: [
+           GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/crops-overview',
+    arguments: {
+      'type': 'na',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/crops.jpg",
+	fit:BoxFit.cover,),
+      ),
+    ),
+      footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:  GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).myCropTitle,
+      textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.white)
+      ),),)
+            ),
+            GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/fields-overview',
+    arguments: {
+      'type': 'na',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/lands.jpg",
+	fit:BoxFit.cover,),
+      ),
+    ),
+      footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).myLands,
+       textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.white))),)
+            ),
+            GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/all-farmers-overview',
+    arguments: {
+      'type': 'na',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/buyer_new.jpg",
+	fit:BoxFit.cover,),
+      ),
+    ),
+      footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).allBuyers,
+      textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.white)
+      ),),)
+            ),
+            GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/my-sales-views',
+    arguments: {
+      'type': 'na',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/salesandrentals.jpg",
+	fit:BoxFit.cover,),
+      ),
+    ),
+      footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).mySaleAndRentalAnouncement,
+      textAlign: TextAlign.start,
+      style: TextStyle(color: Colors.white)
+      ),),)
+            ),
+            GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/machinery-for-sale-overview',
+    arguments: {
+      'type': 'sale',
+      'viewer': 'otherFarmer',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/Tractor.jpg",
+	fit:BoxFit.contain,),
+      ),
+    ),
+      footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).allMachineryForSale,
+      textAlign: TextAlign.start,
+      style: TextStyle(color: Colors.white)
+      ),),)
+            ),
+
+            GridTile(
+      
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: ()async {
+          //route: _GridTitleText(photo.route);
+          userType == 'Farmer'?
+          
+          await Navigator.pushNamed(context,'/machinery-for-sale-overview',
+    arguments: {
+      'type': 'rental',
+      'viewer': 'otherFarmer',
+      
+    },) : _showSelectionDialog(context) ;
+        },
+              child:Image.network(
+		"$apiurl/images/folder/farm_tools_vector.jpg",
+	fit:BoxFit.contain,),
+      ),
+    ),
+      footer:Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:  GridTileBar(
+      backgroundColor: Colors.black54,
+       title: Text(GalleryLocalizations.of(context).allMachineryForRental,
+      textAlign: TextAlign.start,
+      style: TextStyle(color: Colors.white)
+      ),),)
+            ),
+
+        ]
       ),
          bottomNavigationBar: BottomAppBar(
       
@@ -114,116 +307,7 @@ static const routeName = '/farmer_home_screen';
  
 }
 
-class _Photo {
-  _Photo({
-    this.assetName,
-    this.title,
-    this.subtitle,
-    this.navi,
-  });
 
-  final String assetName;
-  final  String title;
-  final String subtitle;
- final  String navi;
-}
-
-const tit = 'Text';
-/// Allow the text size to shrink to fit in the space
-class _GridTitleText extends StatelessWidget {
-  const _GridTitleText(this.text);
-
-  final  dynamic text;
-
-  @override
-  Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: AlignmentDirectional.centerStart,
-      child: Text(text),
-    );
-  }
-}
-
-class _GridDemoPhotoItem extends StatelessWidget {
-  _GridDemoPhotoItem({
-    Key key,
-    @required this.photo,
-   
-  }) : super(key: key);
-
-  final _Photo photo;
-  
-  Future<void> _showSelectionDialog(BuildContext context) {
-
-     // set up the button
-  Widget okButton = FlatButton(
-    child: Text("OK"),
-    onPressed: () {
-      Navigator.pushNamed(context, '/guest_home_screen');
-     },
-  );
-
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-              title: Text(GalleryLocalizations.of(context).onlyFarmersTitle,),
-              content: Text(GalleryLocalizations.of(context).onlyFarmersText,),
-    actions: [
-      okButton,
-    ],);
-        });
-  }
-  @override
-
-  Widget build(BuildContext context) {
-    final dynamic userData = Provider.of<Auth>(context);
-    String userId = '${userData.userId}';
-    String userLetter = '${userId[0]}';
-   String userType = '${userData.userType}';
-    final Widget image = Material(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: ()async {
-          //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
-          
-          await Navigator.pushNamed(context, photo.navi) : _showSelectionDialog(context) ;
-        },
-              child:Image.asset(
-          photo.assetName,
-          //package: 'flutter_gallery_assets',
-          //package: 'HAPPY_FARMING_V4.1',
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-
-    return GridTile(
-          footer: Material(
-            color: Colors.transparent,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: GridTileBar(
-              backgroundColor: Colors.black45,
-              title: _GridTitleText(photo.title),
-              //subtitle: _GridTitleText(photo.subtitle),
-            ),
-         ),
-          child: image,
-        );
-
-    
-     //return image;
-     
-  }
-  
-
-}
 
  Widget _buildTabsBar(dynamic context) {
    final loadedUser = Provider.of<UserProfiles>(context, listen: false);

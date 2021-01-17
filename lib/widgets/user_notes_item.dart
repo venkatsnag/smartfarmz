@@ -25,8 +25,13 @@ await Provider.of<CropLandNotes>(context,listen: false);
 
   
   Widget build(BuildContext context) {
+    List<String> networkImages;
+ var imageUrls;
+     imageUrl?.isEmpty ?? true ? imageUrl : imageUrls = imageUrl.split(",") ;
+     
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshNotes(context));
+     networkImages = imageUrls;
+    //WidgetsBinding.instance.addPostFrameCallback((_) => _refreshNotes(context));
 
 dynamic loadedNotes = Provider.of<CropLandNotes>(context,listen: false);
         Future<void> _showConfirmationDialog(String message){
@@ -49,7 +54,12 @@ dynamic loadedNotes = Provider.of<CropLandNotes>(context,listen: false);
       (builder: (ctx, auth, _) => ListTile(title: auth.isAuth ?
     Text(subject)  : Text(GalleryLocalizations.of(context).login_Signup,) ,
     leading: CircleAvatar(
-      backgroundImage: NetworkImage(imageUrl),
+      backgroundImage: 
+      
+       imageUrl?.isEmpty ?? true ?
+        NetworkImage('https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=375&q=80 375w',)
+      :
+      NetworkImage(networkImages[0]),
     ),
     trailing: Container(
       width: 100,

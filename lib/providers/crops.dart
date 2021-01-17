@@ -394,6 +394,8 @@ loadedCrops.add(Crop(
   price: double.parse(cropData['price'].toString()),
   imageUrl: cropData['imageUrl'],
  forSale: cropData['forSale'],
+ sellerName: cropData['sellerName'],
+ sellerContact: cropData['sellerContact'],
   authToken : authToken,
   //isFavorite: favoriteData['cropId'],
   //isFavorite: favoriteData == null ? false :  favoriteData['cropId'] ?? false,
@@ -464,6 +466,8 @@ loadedCrops.add(Crop(
   imageUrl: cropData['imageUrl'],
   authToken : authToken,
   forSale: cropData['forSale'],
+  sellerName: cropData['sellerName'],
+  sellerContact: cropData['sellerContact'],
   //isFavorite: favoriteData['cropId'],
   //isFavorite: favoriteData == null ? false :  favoriteData['cropId'] ?? false,
   ));
@@ -539,6 +543,7 @@ _items.add(newCrop);
 
 notifyListeners();
 await addCropsByUser(newCrop.id, userId, userType);
+ 
 } catch(error){
   print(error);
 throw error; 
@@ -551,12 +556,6 @@ throw error;
 
 Future <void> anounseCropSale(Crop crop) async {
 
-  //String imageUrl;
-
- String picName = crop.userId + crop.title + 'forsale' ;;
- 
- //crop.imageUrl.isEmpty ? imageUrl = '$apiurl/images/$picName.jpg' : imageUrl = crop.imageUrl;
-final String imageUrl = '$apiurl/images/$userId/$picName.jpg';
   final url = '$apiurl/V1/forSale/crops';
   Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
 //final url = 'https://farmersfriend-4595f.firebaseio.com/crops/$userId.json?$authToken';
@@ -574,7 +573,7 @@ final response = await http.post(url, body: json.encode({
   'investor': crop.investor,
   'seedVariety': crop.seedVariety,
   'area': crop.area,
-  'imageUrl' : imageUrl,
+  'imageUrl' : crop.imageUrl,
   'cropMethod' :crop.cropMethod,
   'price': crop.price,
   'quantityForSale': crop.quantityForSale,
@@ -585,6 +584,8 @@ final response = await http.post(url, body: json.encode({
   'salesUnits' : crop.salesUnits,
   'userId' : userId,
   'location' : crop.location,
+  'sellerName' : crop.sellerName,
+  'sellerContact' : crop.sellerContact,
   'forSale':1,
 }),
 headers: headers,
@@ -604,6 +605,8 @@ userId: crop.userId,
 imageUrl: crop.imageUrl,
 forSale:crop.forSale,
 location:crop.location,
+sellerName:crop.sellerName,
+sellerContact:crop.sellerContact,
 id: json.decode(response.body)['name']
 );
 _items.add(newCrop);
@@ -628,8 +631,7 @@ void updateCropForSale(String id, Crop newCrop) async {
   //local Sql
    Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
     final url = '$apiurl/V1/forSale/crops/$id';
-   String picName = newCrop.userId + newCrop.title + 'forsale' ;;
-   final String imageUrl = '$apiurl/images/$userId/$picName.jpg';
+   
     final response = await http.put(url, body: json.encode({
       'id':newCrop.id,
       'title': newCrop.title,
@@ -648,8 +650,10 @@ void updateCropForSale(String id, Crop newCrop) async {
       'salesUnits' : newCrop.salesUnits,
       'userId' : userId,
       'location' : newCrop.location,
+      'imageUrl' : newCrop.imageUrl,
       'expectedHarvestDate' :newCrop.expectedHarvestDate.toIso8601String(),
-      'imageUrl': imageUrl,
+      'sellerName': newCrop.sellerName,
+      'sellerContact': newCrop.sellerContact,
       //'price': newCrop.price.toDouble(),
 
     }),
@@ -956,6 +960,40 @@ void patchCrop(String cropId, String email, String userType) async {
     final response = await http.patch(url, body: json.encode({
       //'id':userId,
       '$key' : userId,
+      
+      //'price': newCrop.price.toDouble(),
+
+    }),
+    headers: headers,
+    );
+    
+    notifyListeners();
+    print(response.body);
+  }else{
+    print('...');
+
+  }
+}
+
+Future<void> patchCropImages(String cropId, String patchImage) async {
+
+  
+  String id = cropId;
+  String  imageUrl = patchImage;
+
+
+  
+  final cropIndex = _items.indexWhere((crop) => crop.id == id);
+  if(cropIndex >= 0){
+  //Firbase url
+  // final url = 'https://farmersfriend-4595f.firebaseio.com/crops/$userId/$id.json?$authToken';
+  //local Sql
+   Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
+    final url = '$apiurl/crops/$id';
+  
+    final response = await http.patch(url, body: json.encode({
+      //'id':userId,
+      'imageUrl' : imageUrl,
       
       //'price': newCrop.price.toDouble(),
 

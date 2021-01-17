@@ -4,6 +4,7 @@ import '../screens/edit_crop_screen.dart';
 import '../providers/crops.dart';
 import '../l10n/gallery_localizations.dart';
 import '../providers/auth.dart';
+import 'dart:convert';
 
 class UserCropItem extends StatelessWidget {
 
@@ -20,8 +21,12 @@ class UserCropItem extends StatelessWidget {
 
   
   Widget build(BuildContext context) {
+    List<String> networkImages;
+     var imageUrls;
+     imageUrl?.isEmpty ?? true ? imageUrl : imageUrls = imageUrl.split(",") ;
+     
 
-   
+     networkImages = imageUrls;
 
         Future<void> _showConfirmationDialog(String message){
    return  showDialog(context: context, 
@@ -43,7 +48,12 @@ class UserCropItem extends StatelessWidget {
       (builder: (ctx, auth, _) => ListTile(title: auth.isAuth ?
     Text(title)  : Text(GalleryLocalizations.of(context).login_Signup,) ,
     leading: CircleAvatar(
-      backgroundImage: NetworkImage(imageUrl),
+      backgroundImage: 
+      
+       imageUrl?.isEmpty ?? true ?
+        NetworkImage('https://images.unsplash.com/photo-1534940519139-f860fb3c6e38?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80 747w',)
+      :
+      NetworkImage(networkImages[0]),
     ),
     trailing: Container(
       width: 100,

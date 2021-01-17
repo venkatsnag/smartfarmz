@@ -12,15 +12,16 @@ import 'package:path_provider/path_provider.dart' as syspaths;
 import 'dart:convert';
 import '../providers/user_profiles.dart';
 import '../providers/apiClass.dart';
+import '../providers/auth.dart';
 
-class AddMachineryScreen extends StatefulWidget {
-  static const routeName = '/add-machinery';
+class MachinerySaleAnouncementScreen extends StatefulWidget {
+  static const routeName = '/machinery-sale-anouncement';
   @override
-  _AddMachineryScreenState createState() => _AddMachineryScreenState();
+  _MachinerySaleAnouncementScreenState createState() => _MachinerySaleAnouncementScreenState();
 }
 
 
-class _AddMachineryScreenState extends State<AddMachineryScreen> {
+class _MachinerySaleAnouncementScreenState extends State<MachinerySaleAnouncementScreen> {
 
 
 final apiurl = AppApi.api;
@@ -29,25 +30,43 @@ final apiurl = AppApi.api;
  final _typeFocusNode = FocusNode();
   final _brandFocusNode = FocusNode();
   final _modelFocusNode = FocusNode();
+  final _yearFocusNode = FocusNode();
+  final _machConditionFocusNode = FocusNode();
+  final _salePriceFocusNode = FocusNode();
+  final _rentPriceFocusNode = FocusNode();
    final _descriptionFocusNode = FocusNode();
     final _supervisorFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
+  final _locationFocusNode = FocusNode();
+  final _contactFocusNode = FocusNode();
  
   final _form = GlobalKey<FormState>();
-
+String _action;
   
- var _addMachinery = MachineryItemNew(
+ var _forSaleRentalMachinery = MachineryItemNew(
     id: '',
      landId: '',
     type: '',
     brand: '',
      model :'',
+    
       description :'',
        imageUrl :'',
        userId: '',
        supervisor: '',
-    
+       machCondition: '',
+    year: '',
+    forSale: 0,
+    forRental: 0,
+    salePrice: 0.0,
+    rentPrice: 0.0,
+    units: '',
+    sellerName: '',
+    sellerContact: '',
+    location: '',
+    geoLocation: '',
+
     
 
   );
@@ -62,12 +81,29 @@ final apiurl = AppApi.api;
       'imageUrl' :'',
       'id' : '',
        'userId' : '',
-      'supervisor':''
+      'supervisor':'',
+      'machCondition':'',
+      'year':'',
+      'forSale':'',
+      'forRental':'',
+      'salePrice':'0.0',
+      'rentPrice':'0.0',
+      'units':'',
+      'sellerName':'',
+      'sellerContact':'',
+      'location':'',
+      'geoLocation':''
      
 
     };
     var _isInit = true;
     var _isLoading = false;
+
+List<String> _salesUom = ['Piece', 'Box', 'Complete set']; 
+List<String> _rentalUom = ['Hour', 'Day', 'Week', 'Week', 'Month'];// Option 2
+  String _selectedSalesUom;
+  String _selectedRentalUom;
+
 // Uppload Picture
 
   List<String> imagesFromAPI;
@@ -154,7 +190,7 @@ final apiurl = AppApi.api;
 
                                
                                 appendedImages = imagesFromAPI.join(",");
-                                _addMachinery.imageUrl = appendedImages;
+                                _forSaleRentalMachinery.imageUrl = appendedImages;
                                 
                               });
                             },
@@ -287,16 +323,25 @@ String tempImage;
   Future<String> uploadImage(dynamic storedImage) async {
     List<dynamic> cropImageUrl = [];
  
+   
+   /*  tempImage = imagesFromAPI.reduce((value, element) {
+  return value + "," +element;
+});
+   
+       _imageUrlController.text.isNotEmpty && appendedImages != null ?
+       cropImageUrl.add(appendedImages) :  
+       cropImageUrl.add(tempImage); */
+        
+       
+    
     for (int i = 0; i < storedImage.length; i++) {
      
      
      
 
-      var image = storedImage[i].toString();
-      var imagePath = storedImage[i].path;
-      //String cropId = _addMachinery.cropId;
-      String userId = _addMachinery.userId;
-      String picName = 'mach' + '_' + image.split('/').last;
+    
+      String userId = _forSaleRentalMachinery.userId;
+      String picName = 'cropSale' + '_' + _storedImage.path.split('/').last;
       var imageUrl = '$apiurl/images/folder/$picName.jpg';
        cropImageUrl.insert(0,imageUrl);
        
@@ -306,7 +351,7 @@ String tempImage;
       Map<String, String> folderId = {'folderId': 'folder'};
       var request = http.MultipartRequest('POST', Uri.parse(url));
 
-      request.files.add(await http.MultipartFile.fromPath('picture',imagePath));
+      request.files.add(await http.MultipartFile.fromPath('picture', _storedImage.path));
       request.fields['id'] = json.encode(id);
       request.fields['folderId'] = json.encode(folderId);
       var res = await request.send();
@@ -315,9 +360,9 @@ String tempImage;
        
        cropImageUrlString = cropImageUrl.join(",");
      
-      _addMachinery.imageUrl = cropImageUrlString;
+      _forSaleRentalMachinery.imageUrl = cropImageUrlString;
       
-     
+    
     }
 
 
@@ -327,7 +372,8 @@ String tempImage;
     
     List<dynamic> cropImageUrl = [];
  
-      if (imagesFromAPI.isNotEmpty) {
+   
+     if (imagesFromAPI.isNotEmpty) {
  tempImage = imagesFromAPI.reduce((value, element) {
   return value + "," +element;
   
@@ -346,11 +392,10 @@ _imageUrlController.text.isNotEmpty && appendedImages != null ?
      
      
      
-var image = storedImage[i].toString();
-var imagePath = storedImage[i].path;
-      //String cropId = _addMachinery.cropId;
-      String userId = _addMachinery.userId;
-      String picName = 'mach' + '_' + image.split('/').last;
+
+      
+      String userId = _forSaleRentalMachinery.userId;
+      String picName = 'machSale' + '_' + _storedImage.path.split('/').last;
       var imageUrl = '$apiurl/images/folder/$picName.jpg';
        cropImageUrl.insert(0,imageUrl);
        
@@ -360,7 +405,7 @@ var imagePath = storedImage[i].path;
       Map<String, String> folderId = {'folderId': 'folder'};
       var request = http.MultipartRequest('PUT', Uri.parse(url));
 
-      request.files.add(await http.MultipartFile.fromPath('picture', imagePath));
+      request.files.add(await http.MultipartFile.fromPath('picture', _storedImage.path));
       request.fields['id'] = json.encode(id);
       request.fields['folderId'] = json.encode(folderId);
       var res = await request.send();
@@ -369,7 +414,7 @@ var imagePath = storedImage[i].path;
        
        cropImageUrlString = cropImageUrl.join(",");
      
-      _addMachinery.imageUrl = cropImageUrlString;
+      _forSaleRentalMachinery.imageUrl = cropImageUrlString;
       
      
     }
@@ -377,49 +422,58 @@ var imagePath = storedImage[i].path;
 //return;
   }
 
-
- var apiImages;
-
-
-
-
+var apiImages;
+dynamic anouncementType;
+dynamic userId;
  @override
   void didChangeDependencies() {
   if(_isInit){
-      
+      dynamic landId = _forSaleRentalMachinery.landId;
       final routes = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
       final dynamic refId = routes['id'];
+      final dynamic action = routes['action'];
       final dynamic type = routes['type'];
-
-      if(refId != null && type == 'machinery'){
-         _addMachinery = 
+      anouncementType = type;
+      if(refId != null){
+         _forSaleRentalMachinery = 
          Provider.of<Machinery>(context, listen: false).findById(refId);
        
       _initValues = {
       
-      'landId' : _addMachinery.landId,
-      'type': _addMachinery.type,
-      'brand': _addMachinery.brand,
-      'model': _addMachinery.model,
-      'userId' : _addMachinery.userId,
-      'description': _addMachinery.description,
-      'supervisor' : _addMachinery.supervisor,
+      'landId' : _forSaleRentalMachinery.landId,
+      'type': _forSaleRentalMachinery.type,
+      'brand': _forSaleRentalMachinery.brand,
+      'model': _forSaleRentalMachinery.model,
+      'userId' : _forSaleRentalMachinery.userId,
+      'description': _forSaleRentalMachinery.description,
+      'machCondition' : _forSaleRentalMachinery.machCondition,
+      'year' : _forSaleRentalMachinery.year,
+      'salePrice' : _forSaleRentalMachinery.salePrice.toString(),
+      'rentPrice' : _forSaleRentalMachinery.rentPrice.toString(),
+      'forSale' : _forSaleRentalMachinery.forSale.toString(),
+      'forRental' : _forSaleRentalMachinery.forRental.toString(),
+      'units' : _forSaleRentalMachinery.units,
+      'sellerName' : _forSaleRentalMachinery.sellerName,
+      'sellerContact' : _forSaleRentalMachinery.sellerContact,
+      'location' : _forSaleRentalMachinery.location,
+      'geoLocation' : _forSaleRentalMachinery.geoLocation,
       'imageUrl' : '',
 
     };
-    _imageUrlController.text = _addMachinery.imageUrl;
-  _imageUrlController.text.isNotEmpty ?
+    _imageUrlController.text = _forSaleRentalMachinery.imageUrl;
+_action = action;
+   _imageUrlController.text.isNotEmpty ?
         apiImages = _imageUrlController.text.split(",") : apiImages = null;
         apiImages != null ? 
         imagesFromAPI = apiImages 
         : imagesFromAPI = [];
       }
     else if(type == 'lands') {
-      _addMachinery.landId = refId;
+      _forSaleRentalMachinery.landId = refId;
     }
      
      else if(refId == null && type == 'crops') {
-       _addMachinery.landId = null;
+       _forSaleRentalMachinery.landId = null;
     }
    
     }
@@ -436,8 +490,13 @@ var imagePath = storedImage[i].path;
     _typeFocusNode.dispose();
     _brandFocusNode.dispose();
     _modelFocusNode.dispose();
+    _yearFocusNode.dispose();
+    _machConditionFocusNode.dispose();
+    _salePriceFocusNode.dispose();
+    _rentPriceFocusNode.dispose();
     _descriptionFocusNode.dispose();
-     _supervisorFocusNode.dispose();
+    
+    _supervisorFocusNode.dispose();
     _imageUrlFocusNode.dispose();
     super.dispose();
   }
@@ -462,11 +521,13 @@ _form.currentState.save();
 setState(() {
   _isLoading = true;
 });
-if(_addMachinery.id.length > 0){
+if(_action == 'update'){
   if(_storedImage != null){
 await updateImage(imagesFromPhone);}
+  await Provider.of<Machinery>(context, listen: false).updateMachineryForRental(_forSaleRentalMachinery.id, _forSaleRentalMachinery);
+  
 
-await Provider.of<Machinery>(context, listen: false).updateMachinery(_addMachinery.id, _addMachinery);
+
 await showDialog<void>(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -490,13 +551,15 @@ else{
     if(_storedImage != null){
     await uploadImage(imagesFromPhone);}
     
-await  Provider.of<Machinery>(context, listen: false).addMachinery(_addMachinery);
+await  Provider.of<Machinery>(context, listen: false).anounceMachineryForRental(_forSaleRentalMachinery);
 await showDialog<void>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text("Sucessful"),
-            content: Text(
-                "You have sucessfully added machinery details."),
+            content: anouncementType == 'rental' ? Text(
+                "You have sucessfully anounce machinery for Rental.") : 
+                Text(
+                "You have sucessfully anounce machinery for Sale."),
             actions: <Widget>[
               FlatButton(
                 child: Text("Okay"),
@@ -551,9 +614,19 @@ Navigator.of(context).pop();
     
        _isLoading = true;
       });
-      
+       final dynamic user = Provider.of<Auth>(context, listen: false);
+    String userId = '${user.userId}';
   
-      await Provider.of<UserProfiles>(context, listen: false).getusers;
+    final dynamic userData =  await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
+     
+     
+    dynamic userFirstName = userData[0].userFirstname;
+    dynamic userMobile = userData[0].userMobile;
+    userId = userData[0].userId;
+
+        _forSaleRentalMachinery.userId = userId;
+    _forSaleRentalMachinery.sellerName = userFirstName;
+    _forSaleRentalMachinery.sellerContact = userMobile;
       
       setState(() {
         _isLoading = false;
@@ -566,43 +639,29 @@ Navigator.of(context).pop();
 
   @override
   Widget build(BuildContext context) {
-    final dynamic userData = Provider.of<UserProfiles>(context);
+
+     
+    
 //Color method for text fields
     Color hexToColor(String code) {
       return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
     }
-     //final farmId = ModalRoute.of<Farms>(context).settings.arguments as String;
-     final routes = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
-    
-    String cropIdLand;
-    String cropIdOrch;
-    String cropIdCrop;
-    dynamic cType = routes['type'];
-    dynamic id = routes['id'];
-    dynamic machineryId = routes['machineryId'];
-    dynamic title = routes['title'];
-    dynamic userId = '${userData.userId}';
-    //dynamic orchId = routes['id'];
-   if(cType == 'crops'){
-cropIdCrop = id;
-cropIdOrch = null;
-cropIdLand = null;
-     } 
-     else if (machineryId != null)
-     {
-      cropIdLand = _addMachinery.landId;
-      
-     }
 
-     else if (cType == 'lands')
-     {
-      cropIdLand = id;
-      cropIdCrop = null;
-cropIdOrch = null;
-      
-     }
+     //final farmId = ModalRoute.of<Farms>(context).settings.arguments as String;
      
-    return Scaffold(appBar: AppBar(title: Text('Add/Edit Machinery'),
+    String cropIdLand;
+    
+     anouncementType == 'rental' ||  _initValues['forRental'] == '1' ?  
+    _forSaleRentalMachinery.forRental  = 1  :
+    _forSaleRentalMachinery.forSale = 1;
+
+    anouncementType == 'rental' ||  _initValues['forRental'] == '1' ?  
+    _forSaleRentalMachinery.salePrice  = 0.00  :  anouncementType == 'sale' ||  _initValues['forSale'] == '1' ?  
+    _forSaleRentalMachinery.rentPrice = 0.00 : null;
+    //dynamic orchId = routes['id'];
+ 
+     
+    return Scaffold(appBar: AppBar(title: anouncementType == 'rental' ? Text('For Rental') : Text('For Sale'),
     actions: <Widget>[
       IconButton(icon: Icon(Icons.save),
       onPressed: _saveForm,)
@@ -641,17 +700,27 @@ cropIdOrch = null;
                   
                     
                     landId: cropIdLand,
-                    type: _addMachinery.type,
-                    brand: _addMachinery.brand,
-                    model: _addMachinery.model, 
-                  description: _addMachinery.description,
-                  supervisor: _addMachinery.supervisor,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
                   
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -696,16 +765,26 @@ Container(
                     
                     landId: cropIdLand,
                     type: value,
-                    brand: _addMachinery.brand,
-                    model: _addMachinery.model, 
-                  description: _addMachinery.description,
-                  supervisor: _addMachinery.supervisor,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
                   
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -761,17 +840,27 @@ Container(
                   
                     
                     landId: cropIdLand,
-                    type: _addMachinery.type,
+                    type: _forSaleRentalMachinery.type,
                     brand: value,
-                    model: _addMachinery.model, 
-                  description: _addMachinery.description,
-                  supervisor: _addMachinery.supervisor,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
                   
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -810,6 +899,79 @@ Container(
           textInputAction: TextInputAction.next,
           focusNode: _modelFocusNode,
           onFieldSubmitted: (_){ 
+            FocusScope.of(context).requestFocus(_yearFocusNode);},
+            validator: (value){
+              if(value.isEmpty){
+                  return 'Please provide value';
+              }
+              else {
+                return null;
+              }
+            },
+            onSaved: (value){
+             final machinery = MachineryItemNew( 
+
+                  
+                    
+                    landId: cropIdLand,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: value, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  
+                  );
+                _forSaleRentalMachinery = machinery;
+                
+              },
+            ),
+
+           decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    shape: BoxShape.rectangle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1,
+                    )),
+                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
+                      margin: EdgeInsets.all(10.0),
+), 
+
+Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(left: 10.0),
+            child: Text('Year'),
+            ),      
+
+        Container(
+          child: TextFormField(
+         
+          initialValue: _initValues['year'],
+          decoration: InputDecoration(labelText: 'ex:- Manufactured year',
+         /*  fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                        ),
+          textInputAction: TextInputAction.next,
+          focusNode: _yearFocusNode,
+          onFieldSubmitted: (_){ 
             FocusScope.of(context).requestFocus(_descriptionFocusNode);},
             validator: (value){
               if(value.isEmpty){
@@ -825,17 +987,100 @@ Container(
                   
                     
                     landId: cropIdLand,
-                    type: _addMachinery.type,
-                    brand: _addMachinery.brand,
-                    model: value, 
-                  description: _addMachinery.description,
-                  supervisor: _addMachinery.supervisor,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  year:value,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                                   salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  );
+                _forSaleRentalMachinery = machinery;
+                
+              },
+            ),
+
+           decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    shape: BoxShape.rectangle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1,
+                    )),
+                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
+                      margin: EdgeInsets.all(10.0),
+), 
+
+Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(left: 10.0),
+            child: Text('Machine Condition'),
+            ),      
+
+        Container(
+          child: TextFormField(
+         
+          initialValue: _initValues['machCondition'],
+          decoration: InputDecoration(labelText: 'ex:- Current Condition of machinery',
+         /*  fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                        ),
+          textInputAction: TextInputAction.next,
+          focusNode: _machConditionFocusNode,
+          onFieldSubmitted: (_){ 
+            FocusScope.of(context).requestFocus(_descriptionFocusNode);},
+            validator: (value){
+              if(value.isEmpty){
+                  return 'Please provide value';
+              }
+              else {
+                return null;
+              }
+            },
+            onSaved: (value){
+             final machinery = MachineryItemNew( 
+
+                  
+                    
+                    landId: cropIdLand,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition:value,
+                 
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
                   
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -874,7 +1119,7 @@ Container(
           keyboardType: TextInputType.text,
           focusNode: _descriptionFocusNode,
           onFieldSubmitted: (_){ 
-            FocusScope.of(context).requestFocus(_supervisorFocusNode);},
+            FocusScope.of(context).requestFocus(_locationFocusNode);},
               validator: (value){
               if(value.isEmpty){
                   return 'Please provide value';
@@ -889,17 +1134,26 @@ Container(
                   
                     
                     landId: cropIdLand,
-                    type: _addMachinery.type,
-                    brand: _addMachinery.brand,
-                    model: _addMachinery.model, 
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
                   description: value,
-                  supervisor: _addMachinery.supervisor,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
-                  
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -917,13 +1171,13 @@ Container(
 Container(
             alignment: Alignment.topLeft,
             margin: const EdgeInsets.only(left: 10.0),
-            child: Text('Supervisor'),
-            ), 
+            child: Text('Location'),
+            ),   
 Container(
           child:
           TextFormField(
-            initialValue: _initValues['supervisor'],
-          decoration: InputDecoration(labelText: 'supervisor of machinery',
+            initialValue: _initValues['location'],
+          decoration: InputDecoration(labelText: 'Location of machinery',
         /*   fillColor: Colors.white,
                         border: new OutlineInputBorder(
                           borderRadius: new BorderRadius.circular(5.0),
@@ -934,9 +1188,9 @@ Container(
                         ),
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.text,
-          focusNode: _supervisorFocusNode,
-          onFieldSubmitted: (_){ 
-            },
+          focusNode: _locationFocusNode,
+         /*  onFieldSubmitted: (_){ 
+            FocusScope.of(context).requestFocus(_rentPriceFocusNode);}, */
               validator: (value){
               if(value.isEmpty){
                   return 'Please provide value';
@@ -951,17 +1205,25 @@ Container(
                   
                     
                     landId: cropIdLand,
-                    type: _addMachinery.type,
-                    brand: _addMachinery.brand,
-                    model: _addMachinery.model, 
-                  description: _addMachinery.description,
-                  supervisor: value,
-                  id: _addMachinery.id,
-                  userId: userId,
-                  imageUrl: _addMachinery.imageUrl,
-                  
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  location: value,
                   );
-                _addMachinery = machinery;
+                _forSaleRentalMachinery = machinery;
                 
               },
             ),
@@ -976,8 +1238,290 @@ Container(
                       margin: EdgeInsets.all(10.0),
 ), 
 
+Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(left: 10.0),
+            child: Text('Contact Number'),
+            ),   
+Container(
+          child:
+          TextFormField(
+            initialValue: _forSaleRentalMachinery.sellerContact,
+          decoration: InputDecoration(labelText: 'Contact number',
+        /*   fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                        ),
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.text,
+          focusNode: _contactFocusNode,
+         /*  onFieldSubmitted: (_){ 
+            FocusScope.of(context).requestFocus(_rentPriceFocusNode);}, */
+              validator: (value){
+              if(value.isEmpty){
+                  return 'Please provide value';
+              }
+              else {
+                return null;
+              }
+            },
+               onSaved: (value){
+              final machinery = MachineryItemNew( 
 
+                  
+                    
+                    landId: cropIdLand,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: value,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  );
+                _forSaleRentalMachinery = machinery;
+                
+              },
+            ),
+           decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    shape: BoxShape.rectangle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1,
+                    )),
+                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
+                      margin: EdgeInsets.all(10.0),
+), 
+anouncementType == 'rental' || _initValues['forRental'] == '1' ?
  Container(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: _initValues['rentPrice'],
+                                decoration: InputDecoration(
+                                  labelText: 'Rent Price',
+
+                                  /*       fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          gapPadding: 10.0,
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                                ),
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number,
+                                focusNode: _rentPriceFocusNode,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please provide Price/Value';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                               /*  onFieldSubmitted: (_) {
+                                  FocusScope.of(context)
+                                      .requestFocus(_areaFocusNode);
+                                }, */
+                                 onSaved: (value){
+              final machinery = MachineryItemNew( 
+
+                  
+                    
+                    landId: cropIdLand,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  rentPrice:double.parse(value),
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  salePrice: _forSaleRentalMachinery.salePrice,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  
+                  );
+                _forSaleRentalMachinery = machinery;
+                
+              },
+            ),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: Column(
+                                children: <Widget>[
+                                  DropdownButtonFormField(
+                                    hint: _forSaleRentalMachinery?.units?.isNotEmpty ?? true
+                                        ? Text('${_forSaleRentalMachinery.units}')
+                                        : Text(
+                                            'Choose Units for Price'), // Not necessary for Option 1
+                                    value: _selectedRentalUom,
+                                    onChanged: (dynamic newValue) {
+                                      setState(() {
+                                        _selectedRentalUom = newValue;
+                                        return _forSaleRentalMachinery.units =
+                                            _selectedRentalUom;
+                                      });
+                                    },
+                                    items: _rentalUom.map((units) {
+                                      return DropdownMenuItem(
+                                        child: new Text(units),
+                                        value: units,
+                                      );
+                                    }).toList(),
+                                    validator: (dynamic value) => value == null
+                                        ? 'Please fill in your rental units'
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) :
+
+                       Container(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: _initValues['salePrice'],
+                                decoration: InputDecoration(
+                                  labelText: 'Sale Price',
+
+                                  /*       fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          gapPadding: 10.0,
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                                ),
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number,
+                                focusNode: _salePriceFocusNode,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please provide Price/Value';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              
+                                 onSaved: (value){
+              final machinery = MachineryItemNew( 
+
+                  
+                    
+                    landId: cropIdLand,
+                    type: _forSaleRentalMachinery.type,
+                    brand: _forSaleRentalMachinery.brand,
+                    model: _forSaleRentalMachinery.model, 
+                  description: _forSaleRentalMachinery.description,
+                  supervisor: _forSaleRentalMachinery.supervisor,
+                  id: _forSaleRentalMachinery.id,
+                  userId: _forSaleRentalMachinery.userId,
+                  imageUrl: _forSaleRentalMachinery.imageUrl,
+                  salePrice:double.parse(value),
+                  machCondition: _forSaleRentalMachinery.machCondition,
+                  year: _forSaleRentalMachinery.year,
+                  location: _forSaleRentalMachinery.location,
+                  sellerContact: _forSaleRentalMachinery.sellerContact,
+                  sellerName: _forSaleRentalMachinery.sellerName,
+                  units: _forSaleRentalMachinery.units,
+                  forSale: _forSaleRentalMachinery.forSale,
+                  forRental: _forSaleRentalMachinery.forRental,
+                  
+                  rentPrice: _forSaleRentalMachinery.rentPrice,
+                  );
+                _forSaleRentalMachinery = machinery;
+                
+              },
+            ),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: Column(
+                                children: <Widget>[
+                                  DropdownButtonFormField(
+                                    hint: _forSaleRentalMachinery?.units?.isNotEmpty ?? true
+                                        ? Text('${_forSaleRentalMachinery.units}')
+                                        : Text(
+                                            'Choose Units for Price'), // Not necessary for Option 1
+                                    value: _selectedSalesUom,
+                                    onChanged: (dynamic newValue) {
+                                      setState(() {
+                                        _selectedSalesUom = newValue;
+                                        return _forSaleRentalMachinery.units =
+                                            _selectedSalesUom;
+                                      });
+                                    },
+                                    items: _salesUom.map((units) {
+                                      return DropdownMenuItem(
+                                        child: new Text(units),
+                                        value: units,
+                                      );
+                                    }).toList(),
+                                    validator: (dynamic value) => value == null
+                                        ? 'Please fill in your sales Units'
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ),
+
+
+    Container(
                         
                         alignment: Alignment.topLeft,
                         margin: const EdgeInsets.only(left: 10.0),
@@ -1061,7 +1605,7 @@ Container(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             shape: BoxShape.rectangle,
                             border: Border.all(
-                              color: Colors.black,
+                              color: Colors.blue,
                               width: 1,
                             )),
                         padding: EdgeInsets.symmetric(
@@ -1115,7 +1659,7 @@ Container(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             shape: BoxShape.rectangle,
                             border: Border.all(
-                              color: Colors.black,
+                              color: Colors.blue,
                               width: 1,
                             )),
                         padding: EdgeInsets.symmetric(

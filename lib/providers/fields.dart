@@ -98,19 +98,16 @@ Future<void> fetchfields([bool filterByUser = false]) async {
   
 
  final response = await http.get(url, headers: headers);
-// final extractedCrops = json.decode(response.body) as Map<String, dynamic>;
+
 if(response.statusCode == 200){
-  final List<dynamic> extractedCrops = json.decode(response.body);
+  final List<dynamic> extractedFields = json.decode(response.body);
   final List<Field> loadedfields = [];
- if(extractedCrops.length > 0){
-  /*url = 'https://farmersfriend-4595f.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
- final favoriteResponse = await http.get(url);
- final dynamic favoriteData = json.decode(favoriteResponse.body);
- print(favoriteData);*/
+ if(extractedFields.length > 0){
+
  
- extractedCrops.forEach((dynamic cropData ){
+ extractedFields.forEach((dynamic cropData ){
     final String picId = userId + cropData['title'];
-     var imageUrl = '$apiurl/images/$picId.jpg';
+  
      
    //print(favoriteData[cropId]);
 loadedfields.add(Field(
@@ -139,11 +136,7 @@ notifyListeners();
 } else{
   _items = loadedfields;
   
-  
-  return Container(
-    child: Text('No Data'),);
-
-}
+ }
 }
   
 else{
@@ -220,7 +213,7 @@ Future <void> updateField(String id, Field newField) async {
    Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
     final url = '$apiurl/lands/$id';
   String picName = newField.userId + newField.title + newField.id;
-   final String imageUrl = '$apiurl/images/$userId/$picName.jpg';
+   
     final response = await http.put(url, body: json.encode({
       'id':newField.id,
       'title':newField.title,
@@ -234,7 +227,7 @@ Future <void> updateField(String id, Field newField) async {
       'area' : newField.area.toDouble(),
       'units' : newField.units,
       'userId' : newField.userId,
-      'imageUrl': imageUrl,
+      'imageUrl': newField.imageUrl,
       //'price': newCrop.price.toDouble(),
 
     }),

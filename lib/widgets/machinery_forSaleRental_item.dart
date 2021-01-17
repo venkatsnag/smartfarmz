@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../screens/crop_for_sale_detail_screen.dart';
+import '../screens/machinery_forSaleRental_detail_screen.dart';
 import 'package:provider/provider.dart';
-import '../providers/crop.dart';
+import '../providers/machinery.dart';
 
 import '../providers/auth.dart';
 
-class CropsForSaleItem extends StatelessWidget {
+class MachineryForSaleRentalItem extends StatelessWidget {
 
  
  
   //Map<String, String> headers = {'Authorization': 'Bearer $authToken'};
 
-  CropsForSaleItem(String id, String title, String imageUrl, String price);
+  MachineryForSaleRentalItem(String id, String type, String year, String imageUrl, String salePrice, String rentPrice);
    
   /* final String id;
     final String imageUrl;
@@ -24,27 +24,29 @@ class CropsForSaleItem extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-       var imageUrls;
-    final crop = Provider.of<Crop>(context);
+    var imageUrls;
+    final machinery = Provider.of<MachineryItemNew>(context);
     List<String> networkImages;
-     crop?.imageUrl?.isEmpty ?? true ? crop.imageUrl : imageUrls = crop.imageUrl.split(",") ;
+     machinery?.imageUrl?.isEmpty ?? true ? machinery.imageUrl : imageUrls = machinery.imageUrl.split(",") ;
 
    networkImages = imageUrls;
+    
     final authData = Provider.of<Auth>(context, listen: false);
     return GridTile(
-      child: Material(
+      
+      child:  Material(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       clipBehavior: Clip.antiAlias,
       child:GestureDetector
       (
         onTap: (){
-          Navigator.of(context).pushNamed(CropForSaleDetailScreen.routeName, 
-          arguments: crop.id,
+          Navigator.of(context).pushNamed(MachineryForSaleRentalDetailScreen.routeName, 
+          arguments: machinery.id,
         
           );
         },
         child: 
-         crop?.imageUrl?.isEmpty ?? true ?
+          machinery?.imageUrl?.isEmpty ?? true ?
         Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.contain)
       :
     Image.network(networkImages[0], fit:BoxFit.cover,
@@ -57,8 +59,10 @@ class CropsForSaleItem extends StatelessWidget {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
             ),
             clipBehavior: Clip.antiAlias,
-            child:GridTileBar(
+            child:
+            GridTileBar(
       backgroundColor: Colors.black54,
+      
       /* leading: Consumer<Crop>(
               builder: (ctx, crop, _) => IconButton(icon: 
         Icon(crop.isFavorite ? Icons.favorite : Icons.favorite_border),
@@ -70,7 +74,7 @@ class CropsForSaleItem extends StatelessWidget {
       ), */
       leading: Text('₹', textScaleFactor: 1.5, 
       style: TextStyle(color: Colors.white),),
-      title: Text(crop.title,
+      title: Text(machinery.type,
       textAlign: TextAlign.center,
       
       ),
@@ -89,69 +93,63 @@ class CropsForSaleItem extends StatelessWidget {
       ),
     ), */
     // Solid text as fill.
-    TextSpan(
+    /* TextSpan(
       text: 'Rs:- ',
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
-    ),
+    ), */
+
+    machinery.forSale == 1 ?
      TextSpan(
-      text: crop.price.toString(),
+      text: machinery.salePrice.toString(),
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
-    ),
-      TextSpan(
-      text: ' Per ',
-      style: TextStyle(
-        fontSize: 15,
-        color: Colors.white,
-      ),
-    ),
-       TextSpan(
-      text: crop.salesUnits,
+    ) : 
+     TextSpan(
+      text: machinery.rentPrice.toString(),
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
     ),
    
-
-TextSpan(
-     
-      children: <TextSpan>[
-        TextSpan(
-      text: '\nQty: ',
+/* TextSpan(
+      text: '\nModel: ',
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
     ),
- TextSpan(
-      text: crop.quantityForSale,
+    TextSpan(
+      text: machinery.model,
+      style: TextStyle(
+        fontSize: 15,
+        color: Colors.white,
+      ),
+    ), */
+    TextSpan(
+      text: '\nYear: ',
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
     ),
-
-     TextSpan(
-      text: crop.quantityUnits,
+    TextSpan(
+      text: machinery.year,
       style: TextStyle(
         fontSize: 15,
         color: Colors.white,
       ),
     ),
-
-      ]
-    ),
-   
   ],
 )
       ),),
-     ),)); 
+     ),),
+     ); 
   }
 }
 

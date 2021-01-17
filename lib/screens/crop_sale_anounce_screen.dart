@@ -9,7 +9,12 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'dart:convert';
+
+
+import '../providers/user_profiles.dart';
 import '../providers/apiClass.dart';
+import '../providers/auth.dart';
+
 
 class CropSaleAnouncementScreen extends StatefulWidget {
   static const routeName = '/crops-sale-anounce';
@@ -35,6 +40,7 @@ final apiurl = AppApi.api;
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _locationFocusNode = FocusNode();
+  final _contactFocusNode = FocusNode();
 
   final _form = GlobalKey<FormState>();
 
@@ -59,6 +65,8 @@ final apiurl = AppApi.api;
     seedVariety: '',
     imageUrl: '',
     location: '',
+    sellerName: '',
+    sellerContact: '',
     quantityForSale: '',
     quantityUnits: '',
     forSale: 0,
@@ -83,10 +91,13 @@ final apiurl = AppApi.api;
     'location': '',
     'quantityForSale': '',
     'quantityUnits': '',
+    'sellerName':'',
+    'sellerContact':'',
     'forSale': '',
   };
   var _isInit = true;
   var _isLoading = false;
+
 
 // Titles List
   List<String> _title = [
@@ -120,6 +131,31 @@ final apiurl = AppApi.api;
   String _selectedCropMethod;
   @override
   void initState() {
+    Future<dynamic>.delayed(Duration.zero).then((dynamic _) async {
+      setState(() {
+        //_storedImage = File(_imageFile.path);
+     
+    
+       _isLoading = true;
+      });
+       final dynamic user = Provider.of<Auth>(context, listen: false);
+    String userId = '${user.userId}';
+  
+    final dynamic userData =  await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
+     
+     
+    dynamic userFirstName = userData[0].userFirstname;
+    dynamic userMobile = userData[0].userMobile;
+    userId = userData[0].userId;
+
+        _forSaleCrop.userId = userId;
+    _forSaleCrop.sellerName = userFirstName;
+    _forSaleCrop.sellerContact = userMobile;
+      
+      setState(() {
+        _isLoading = false;
+      });
+    });
     _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
@@ -147,80 +183,154 @@ final apiurl = AppApi.api;
   }
 
 // Uppload Picture
-//final String url = 'http://192.168.39.190:3000/upload';
-  PickedFile _imageFile;
-  File _storedImage;
-  String _storedImagePath;
 
-  Future<String> uploadImage(dynamic filename) async {
-    String picName = _forSaleCrop.userId + _forSaleCrop.title + 'forsale';
-    String userId = _forSaleCrop.userId;
-    final String url = '$apiurl/upload/$userId';
-    // Map<String,String> newMap = {'id':'$picName.jpg', 'userId' :'$userId'};
-    Map<String, String> id = {'id': '$picName.jpg'};
-    Map<String, String> folderId = {'folderId': '$userId'};
-    //Map<String,String> usId = {'usId' : '$userId'};
-    var request = http.MultipartRequest('POST', Uri.parse(url));
+  List<String> imagesFromAPI;
+  List<String> tempImages;
+  
+  String patchImage;
+  String _error;
+  String appendedImages;
+  List<dynamic> imagesFromPhone = List<dynamic>();
+  /* Future<File> _imageFromPhone; */
+  Widget buildGridView(BuildContext context) {
+    
+    return GridView.count(
+      crossAxisCount: 2,
+      children: 
+      (_imageUrlController.text.isEmpty) ?
+      List.generate(imagesFromPhone.length, (index) {
+             
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                
+                child:  Stack(
+                  children: <Widget>[
+                    Image.file(
+                      imagesFromPhone[index],
+        fit: BoxFit.cover,
+        width: double.infinity,
+        ),
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: InkWell(
+                        child: Icon(
+                          Icons.remove_circle,
+                          size: 25,
+                          color: Colors.red,
+                        ),
+                        onTap: () {
+                          setState(() {
+                             
+                              imagesFromPhone.replaceRange(index, index + 1, []);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ) 
+              );  
+            }) :
+      List.generate(imagesFromAPI.length, (index) {
+                  //var image = _editCrop.imageUrl[index];
+                  patchImage = imagesFromAPI[index];
+                 
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
 
-    request.files.add(await http.MultipartFile.fromPath('picture', filename));
-    request.fields['id'] = json.encode(id);
-    request.fields['folderId'] = json.encode(folderId);
-    //request.fields['usId'] = json.encode(usId);
-    var res = await request.send();
-    request.url;
-    print(res);
-    return res.reasonPhrase;
-  }
+                    child: 
+                   
+                    
+                    Stack(
+                      children: <Widget>[
+                        new Image.network(
+                          imagesFromAPI[index],
+                          width: 300,
+                          height: 300,
+                          fit: BoxFit.fill,
+                        ),
+                        Positioned(
+                          right: 5,
+                          top: 5,
+                          child: InkWell(
+                            child: Icon(
+                              Icons.remove_circle,
+                              size: 25,
+                              color: Colors.red,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                imagesFromAPI.remove(patchImage);
+                                String newImageUrls = jsonEncode(imagesFromAPI);
+                                imagesFromAPI.isNotEmpty
+                                    ? newImageUrls
+                                    : imagesFromAPI;
 
-  Future<String> updateImage(dynamic filename) async {
-    String picName = _forSaleCrop.userId + _forSaleCrop.title + 'forsale';
-    String userId = _forSaleCrop.userId;
-    final String url = '$apiurl/upload/$userId';
-    // Map<String,String> newMap = {'id':'$picName.jpg', 'userId' :'$userId'};
-    Map<String, String> id = {'id': '$picName.jpg'};
-    Map<String, String> folderId = {'folderId': '$userId'};
-    //Map<String,String> usId = {'usId' : '$userId'};
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-
-    request.files.add(await http.MultipartFile.fromPath('picture', filename));
-    request.fields['id'] = json.encode(id);
-    request.fields['folderId'] = json.encode(folderId);
-    //request.fields['usId'] = json.encode(usId);
-    var res = await request.send();
-    request.url;
-    print(res);
-    return res.reasonPhrase;
-  }
-
-// Take picture
-  String state = "";
-
-  // Images camera selection
-  void _openGallery(BuildContext context) async {
-    final picker = ImagePicker();
-    var picture = await picker.getImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-      maxWidth: 600,
+                               
+                                appendedImages = imagesFromAPI.join(",");
+                                _forSaleCrop.imageUrl = appendedImages;
+                                
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ) 
+                  );
+                   
+                }),
+          
+           
     );
-    _imageFile = picture;
-
-    setState(() {
-      _storedImage = File(_imageFile.path);
-      _storedImagePath = _imageFile.path;
-    });
-    Navigator.of(context).pop();
   }
 
-/*  Widget _setImageView() {
-    if (_imageFile != null) {
-      return Image.file(_imageFile, width: 500, height: 500);
-    } else {
-      return Text("Please select an image");
-    }
-  }  */
+  Widget newGridView(BuildContext context) {
+     
+      return GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(imagesFromPhone.length, (index) {
+             
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  children: <Widget>[
+                  Image.file(
+                     imagesFromPhone[index],
+        fit: BoxFit.cover,
+        width: double.infinity,
+        ),
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: InkWell(
+                        child: Icon(
+                          Icons.remove_circle,
+                          size: 25,
+                          color: Colors.red,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            imagesFromPhone.replaceRange(index, index + 1, []);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            })
+         
+    );
+  }
+    
 
-  Future<void> _showSelectionDialog(BuildContext context) {
+  Future _onAddImageClick(BuildContext context) async {
+setState(() {
+  _showSelectionDialog(context);
+});
+  }
+
+    Future<void> _showSelectionDialog(BuildContext context) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -248,24 +358,142 @@ final apiurl = AppApi.api;
         });
   }
 
-  Future<void> _takePicture(BuildContext context) async {
+     Future<void> _takePicture(BuildContext context) async {
     final picker = ImagePicker();
-    final imageFile = await picker.getImage(
+    final picture = await picker.getImage(
       source: ImageSource.camera,
       imageQuality: 85,
       maxWidth: 600,
     );
+    _imageFile = picture;
     setState(() {
-      _storedImage = File(imageFile.path);
-      _storedImagePath = imageFile.path;
+      _storedImage = File(_imageFile.path);
+      imagesFromPhone.insert(0, _storedImage);
+      _storedImagePath = _imageFile.path;
     });
-    final appDir = await syspaths.getApplicationDocumentsDirectory();
-    final fileName = path.basename(imageFile.path);
-    final savedImage = await _storedImage.copy('${appDir.path}/$fileName');
-    //widget.onSelectImage();
     Navigator.of(context).pop();
   }
 
+  Future<void> _openGallery(BuildContext context) async {
+    final picker = ImagePicker();
+    var picture = await picker.getImage(source: ImageSource.gallery,
+          imageQuality: 85,
+      maxWidth: 600,);
+     _imageFile = picture;
+    
+        setState(() {
+      _storedImage = File(_imageFile.path);
+      imagesFromPhone.insert(0, _storedImage);
+      _storedImagePath = _imageFile.path;
+      
+    });
+    Navigator.of(context).pop();
+  }
+
+  
+
+  PickedFile _imageFile;
+  List<dynamic> storedImage;
+  File _storedImage;
+  String _storedImagePath;
+  var cropImageUrlString;
+String tempImage;
+  Future<String> uploadImage(dynamic storedImage) async {
+    List<dynamic> cropImageUrl = [];
+ 
+   
+    for (int i = 0; i < storedImage.length; i++) {
+     
+     
+     
+
+      var image = storedImage[i].toString();
+      var imagePath = storedImage[i].path;
+      String cropId = _forSaleCrop.cropId;
+      String userId = _forSaleCrop.userId;
+      String picName = 'crop' + '_' + image.split('/').last;
+       var imageUrl = '$apiurl/images/folder/$picName.jpg';
+       cropImageUrl.insert(0,imageUrl);
+       
+      final String url = '$apiurl/upload/folder';
+
+      Map<String, String> id = {'id': '$picName.jpg'};
+      Map<String, String> folderId = {'folderId': 'folder'};
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      request.files.add(await http.MultipartFile.fromPath('picture', imagePath));
+      request.fields['id'] = json.encode(id);
+      request.fields['folderId'] = json.encode(folderId);
+      var res = await request.send();
+      request.url;
+      print(res);
+       
+       cropImageUrlString = cropImageUrl.join(",");
+     
+      _forSaleCrop.imageUrl = cropImageUrlString;
+      
+     
+    }
+
+
+  }
+
+  Future<String> updateImage(dynamic storedImage) async {
+    
+    List<dynamic> cropImageUrl = [];
+ 
+   
+    if (imagesFromAPI.isNotEmpty) {
+ tempImage = imagesFromAPI.reduce((value, element) {
+  return value + "," +element;
+  
+        
+});
+_imageUrlController.text.isNotEmpty && appendedImages != null ?
+       cropImageUrl.add(appendedImages) :  
+       cropImageUrl.add(tempImage);
+   } else{
+     imagesFromAPI;
+   }
+        
+       
+    
+    for (int i = 0; i < storedImage.length; i++) {
+     
+     
+     
+
+     var image = storedImage[i].toString();
+var imagePath = storedImage[i].path;
+      String cropId = _forSaleCrop.cropId;
+      String userId = _forSaleCrop.userId;
+      String picName = 'crop' + '_' + image.split('/').last;
+      var imageUrl = '$apiurl/images/folder/$picName.jpg';
+       cropImageUrl.insert(0,imageUrl);
+       
+      final String url = '$apiurl/upload/folder';
+
+      Map<String, String> id = {'id': '$picName.jpg'};
+      Map<String, String> folderId = {'folderId': 'folder'};
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
+
+      request.files.add(await http.MultipartFile.fromPath('picture', imagePath));
+      request.fields['id'] = json.encode(id);
+      request.fields['folderId'] = json.encode(folderId);
+      var res = await request.send();
+      request.url;
+      print(res);
+       
+       cropImageUrlString = cropImageUrl.join(",");
+     
+      _forSaleCrop.imageUrl = cropImageUrlString;
+      
+    
+    }
+
+//return;
+  }
+var apiImages;
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -273,6 +501,7 @@ final apiurl = AppApi.api;
           ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
       final dynamic cropId = routes['id'];
       final dynamic action = routes['action'];
+      _action = action;
 
       if (cropId != null) {
         _forSaleCrop =
@@ -293,12 +522,18 @@ final apiurl = AppApi.api;
           'imageUrl': '',
           'units': _forSaleCrop.units,
           'salesUnits': _forSaleCrop.salesUnits,
+          'sellerName' : _forSaleCrop.sellerName,
+      'sellerContact' : _forSaleCrop.sellerContact,
           'location': _forSaleCrop.location,
           'quantityForSale': _forSaleCrop.quantityForSale.toString(),
           'quantityUnits': _forSaleCrop.quantityUnits,
         };
-        _imageUrlController.text = _forSaleCrop.imageUrl;
-        _action = action;
+       _imageUrlController.text = _forSaleCrop.imageUrl;
+         _imageUrlController.text.isNotEmpty ?
+        apiImages = _imageUrlController.text.split(",") : apiImages = null;
+        apiImages != null ? 
+        imagesFromAPI = apiImages 
+        : imagesFromAPI = [];
       }
     }
     _isInit = false;
@@ -328,10 +563,7 @@ final apiurl = AppApi.api;
   }
 
   Future<void> _saveForm() async {
-    /*  setState((){ 
-                _expectedHarvestDateFocusNode.text.isEmpty ? _validate = true : _validate = false;
-            
-             }); */
+
 
     final isValid = _form.currentState.validate();
     if (!isValid) {
@@ -344,18 +576,20 @@ final apiurl = AppApi.api;
       //_expectedHarvestDateFocusNode.text.isEmpty ? _validate = true : _validate = false;
     });
     if (_action == 'update') {
+      if (_storedImagePath != null) {
+        await updateImage(imagesFromPhone);
+      }
       await Provider.of<Crops>(context, listen: false)
           .updateCropForSale(_forSaleCrop.id, _forSaleCrop);
-      if (_storedImage != null) {
-        await updateImage(_storedImagePath);
-      }
+      
     } else {
       try {
+         if (_storedImagePath != null) {
+          await uploadImage(imagesFromPhone);
+        }
         await Provider.of<Crops>(context, listen: false)
             .anounseCropSale(_forSaleCrop);
-        if (_storedImage != null) {
-          await uploadImage(_storedImagePath);
-        }
+       
       } catch (error) {
         await showDialog<void>(
           context: context,
@@ -489,7 +723,11 @@ Navigator.of(context).pop();
                                     _forSaleCrop.expectedHarvestDate,
                                 id: _forSaleCrop.id,
                                 userId: value,
-                                isFavorite: _forSaleCrop.isFavorite);
+                                isFavorite: _forSaleCrop.isFavorite,
+                                 sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
+                                
+                                );
                             _forSaleCrop = crop;
                           },
                         ),
@@ -542,6 +780,8 @@ Navigator.of(context).pop();
                                 userId: _forSaleCrop.userId,
                                 salesUnits: _forSaleCrop.salesUnits,
                                 location: _forSaleCrop.location,
+                                 sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                 isFavorite: _forSaleCrop.isFavorite);
                             _forSaleCrop = crop;
                           },
@@ -605,6 +845,8 @@ Navigator.of(context).pop();
                                 id: _forSaleCrop.id,
                                 userId: _forSaleCrop.userId,
                                 location: _forSaleCrop.location,
+                                 sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                 isFavorite: _forSaleCrop.isFavorite);
                             _forSaleCrop = crop;
                           },
@@ -655,6 +897,8 @@ Navigator.of(context).pop();
                                 id: _forSaleCrop.id,
                                 userId: _forSaleCrop.userId,
                                 location: _forSaleCrop.location,
+                                 sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                 isFavorite: _forSaleCrop.isFavorite);
                           },
                         ),
@@ -705,6 +949,8 @@ Navigator.of(context).pop();
                                 id: _forSaleCrop.id,
                                 userId: _forSaleCrop.userId,
                                 location: value,
+                                 sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                 isFavorite: _forSaleCrop.isFavorite);
                           },
                         ),
@@ -773,6 +1019,8 @@ Navigator.of(context).pop();
                                       id: _forSaleCrop.id,
                                       userId: _forSaleCrop.userId,
                                       location: _forSaleCrop.location,
+                                       sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                       isFavorite: _forSaleCrop.isFavorite);
                                   _forSaleCrop = crop;
                                 },
@@ -783,11 +1031,11 @@ Navigator.of(context).pop();
                               child: Column(
                                 children: <Widget>[
                                   DropdownButtonFormField(
-                                    hint: _forSaleCrop.salesUnits != null
-                                        ? Text('${_forSaleCrop.salesUnits}')
+                                    hint: _forSaleCrop?.salesUnits?.isNotEmpty
+                                        ?? true ? Text('${_forSaleCrop.salesUnits}')
                                         : Text(
                                             'Choose Units for Price'), // Not necessary for Option 1
-                                    value: _forSaleCrop.salesUnits,
+                                    value: _selectedSalesUom,
                                     onChanged: (dynamic newValue) {
                                       setState(() {
                                         _selectedSalesUom = newValue;
@@ -801,9 +1049,9 @@ Navigator.of(context).pop();
                                         value: salesUnits,
                                       );
                                     }).toList(),
-                                    validator: (dynamic value) => value == null
+                                   /*  validator: (dynamic value) => value == null
                                         ? 'Please fill in your salesUnits'
-                                        : null,
+                                        : null, */
                                   ),
                                 ],
                               ),
@@ -866,6 +1114,8 @@ Navigator.of(context).pop();
                                       id: _forSaleCrop.id,
                                       userId: _forSaleCrop.userId,
                                       location: _forSaleCrop.location,
+                                       sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                       isFavorite: _forSaleCrop.isFavorite);
                                 },
                               ),
@@ -874,11 +1124,11 @@ Navigator.of(context).pop();
                               child: Column(
                                 children: <Widget>[
                                   DropdownButtonFormField(
-                                    hint: _forSaleCrop.units != null
+                                    hint: _forSaleCrop?.units?.isNotEmpty ?? true
                                         ? Text('${_forSaleCrop.units}')
                                         : Text(
                                             'Choose Units'), // Not necessary for Option 1
-                                    value: _forSaleCrop.units,
+                                    value: _selectedUom,
                                     onChanged: (dynamic newValue) {
                                       setState(() {
                                         _selectedUom = newValue;
@@ -892,6 +1142,9 @@ Navigator.of(context).pop();
                                         value: units,
                                       );
                                     }).toList(),
+                                   /*  validator: (dynamic value) => value == null
+                                        ? 'Please fill in your Units'
+                                        : null, */
                                   ),
                                 ],
                               ),
@@ -960,6 +1213,8 @@ Navigator.of(context).pop();
                                       id: _forSaleCrop.id,
                                       userId: _forSaleCrop.userId,
                                       location: _forSaleCrop.location,
+                                       sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                       isFavorite: _forSaleCrop.isFavorite);
                                 },
                               ),
@@ -968,11 +1223,11 @@ Navigator.of(context).pop();
                               child: Column(
                                 children: <Widget>[
                                   DropdownButtonFormField(
-                                    hint: _forSaleCrop.quantityUnits != null
+                                    hint: _forSaleCrop?.quantityUnits?.isNotEmpty ?? true
                                         ? Text('${_forSaleCrop.quantityUnits}')
                                         : Text(
                                             'Choose Units'), // Not necessary for Option 1
-                                    value: _forSaleCrop.quantityUnits,
+                                    value: _selectedquantityUnits,
                                     onChanged: (dynamic newValue) {
                                       setState(() {
                                         _selectedquantityUnits = newValue;
@@ -986,9 +1241,9 @@ Navigator.of(context).pop();
                                         value: quantityUnits,
                                       );
                                     }).toList(),
-                                    validator: (dynamic value) => value == null
+                                   /*  validator: (dynamic value) => value == null
                                         ? 'Please fill in your Units'
-                                        : null,
+                                        : null, */
                                   ),
                                 ],
                               ),
@@ -1011,11 +1266,11 @@ Navigator.of(context).pop();
                         child: Column(
                           children: <Widget>[
                             DropdownButtonFormField(
-                              hint: _forSaleCrop.cropMethod != null
+                              hint: _forSaleCrop?.cropMethod?.isNotEmpty ?? true
                                   ? Text('${_forSaleCrop.cropMethod}')
                                   : Text(
                                       'Crop Method'), // Not necessary for Option 1
-                              value: _forSaleCrop.cropMethod,
+                              value: _selectedCropMethod,
                               onChanged: (dynamic newValue) {
                                 setState(() {
                                   _selectedCropMethod = newValue;
@@ -1029,9 +1284,9 @@ Navigator.of(context).pop();
                                   value: cropMethod,
                                 );
                               }).toList(),
-                              validator: (dynamic value) =>
+                              /* validator: (dynamic value) =>
                                   value == null ? 'Please choose method' : null,
-                            ),
+                            */ ),
                           ],
                         ),
                         decoration: BoxDecoration(
@@ -1045,6 +1300,77 @@ Navigator.of(context).pop();
                             vertical: 0.5, horizontal: 1.0),
                         margin: EdgeInsets.all(10.0),
                       ),
+
+                      Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.only(left: 10.0),
+            child: Text('Contact Number'),
+            ),   
+Container(
+          child:
+          TextFormField(
+            initialValue: _forSaleCrop.sellerContact,
+          decoration: InputDecoration(labelText: 'Contact number',
+        /*   fillColor: Colors.white,
+                        border: new OutlineInputBorder(
+                          borderRadius: new BorderRadius.circular(5.0),
+                          borderSide: new BorderSide(
+                            color: Colors.blueAccent,
+                          ),
+                        ), */
+                        ),
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.text,
+          focusNode: _contactFocusNode,
+         /*  onFieldSubmitted: (_){ 
+            FocusScope.of(context).requestFocus(_rentPriceFocusNode);}, */
+              validator: (value){
+              if(value.isEmpty){
+                  return 'Please provide value';
+              }
+              else {
+                return null;
+              }
+            },
+                onSaved: (value) {
+                                  _forSaleCrop = Crop(
+                                      title: _forSaleCrop.title,
+                                      seedVariety: _forSaleCrop.seedVariety,
+                                      price: _forSaleCrop.price,
+                                      area: _forSaleCrop.area,
+                                      units: _forSaleCrop.units,
+                                      salesUnits: _forSaleCrop.salesUnits,
+                                      farmer: _forSaleCrop.farmer,
+                                      investor: _forSaleCrop.investor,
+                                      cropMethod: _forSaleCrop.cropMethod,
+                                      quantityForSale: _forSaleCrop.quantityForSale,
+                                    quantityUnits: _forSaleCrop.quantityUnits,
+                                      expectedHarvestDate:
+                                          _forSaleCrop.expectedHarvestDate,
+                                      description: _forSaleCrop.description,
+                                      imageUrl: _forSaleCrop.imageUrl,
+                                      id: _forSaleCrop.id,
+                                      userId: _forSaleCrop.userId,
+                                      location: _forSaleCrop.location,
+                                      isFavorite: _forSaleCrop.isFavorite,
+
+                                      sellerContact: value,
+                  sellerName: _forSaleCrop.sellerName,
+                 );
+                                },
+            ),
+           decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    shape: BoxShape.rectangle,
+                    border: Border.all(
+                              color: Colors.blue,
+                              width: 1,
+                            )),
+                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
+                      margin: EdgeInsets.all(10.0),
+),
+
+
                       Container(
                         width: 500,
                         child: Column(
@@ -1085,6 +1411,8 @@ Navigator.of(context).pop();
                                     id: _forSaleCrop.id,
                                     userId: _forSaleCrop.userId,
                                     location: _forSaleCrop.location,
+                                     sellerContact: _forSaleCrop.sellerContact,
+                                  sellerName: _forSaleCrop.sellerName,
                                     isFavorite: _forSaleCrop.isFavorite);
                               },
                             ),
@@ -1135,121 +1463,90 @@ Navigator.of(context).pop();
                         margin: EdgeInsets.all(10.0),
                       ),
 
-                      /* TextFormField(
-              
-              initialValue: _initValues['seedingDating'],
-            decoration: InputDecoration(labelText: 'Seeding Date'),
-            textInputAction: TextInputAction.next,
-            
-            focusNode: _seedingDateFocusNode,
-            
-            onFieldSubmitted: (_){ 
-              
-              FocusScope.of(context).requestFocus(_descriptionFocusNode);},
-                 onSaved: (value){
-                _editCrop = Crop( 
-                  title: _editCrop.title,
-                  price: _editCrop.price,
-                  area: _editCrop.area,
-                  farmer: _editCrop.farmer,
-                  investor: _editCrop.investor,
-                  cropMethod: _editCrop.cropMethod,
-                  //seedingDate: DateTime.parse(value),
-                  description: _editCrop.description, 
-                  
-                  imageUrl: _editCrop.imageUrl,
-                  id: _editCrop.id,
-                  isFavorite: _editCrop.isFavorite );
-              },
-              
-            ), */
-                      /* IconButton(icon: Icon(Icons.alarm),
-          onPressed: (){
-            selectedDate(context);} */
+                    
 
                       Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            /*  Container(
-              width: 100,
-              height: 100,
-              margin: EdgeInsets.only(top: 8, right: 10,),
-              
-              decoration: BoxDecoration(border: Border.all(width: 1,
-               color: Colors.grey, ),
-               ),
-               child: _imageUrlController.text.isEmpty ? Text('Enter Image Url') : FittedBox(child: Image.network(_imageUrlController.text),
-               fit: BoxFit.cover,),
-            ),
-            Expanded(
-                          child: TextFormField(
-                           
-                decoration: InputDecoration(labelText: 'Image Url'),
-                keyboardType: TextInputType.url,
-                textInputAction: TextInputAction.done,
-                controller: _imageUrlController,
-                focusNode: _imageUrlFocusNode,
-                onFieldSubmitted: (_){_saveForm();},
-                 onSaved: (value){
-              _editCrop = Crop( 
-                title: _editCrop.title,
-                seedVariety: _editCrop.seedVariety,
-                price: _editCrop.price,
-                description: _editCrop.description, 
-                area: _editCrop.area,
-                units: _editCrop.units,
-                imageUrl: value,
-                farmer: _editCrop.farmer,
-                investor: _editCrop.investor,
-                cropMethod: _editCrop.cropMethod,
-               seedingDate: _editCrop.seedingDate,
-                id: _editCrop.id,
-                userId: _editCrop.userId,
-                isFavorite: _editCrop.isFavorite );
-            },
-                ),
-                
-            ), */
+                        
+                        alignment: Alignment.topLeft,
+                        margin: const EdgeInsets.only(left: 10.0),
+                        child: Text('Images'),
+                      ),
 
-                            Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 1, color: Colors.grey),
-                                ),
-                                child: _storedImage != null
-                                    ? Image.file(
-                                        _storedImage,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                      )
-                                    : _forSaleCrop.id != null
-                                        ? Image.network(
-                                            _imageUrlController.text)
-                                        : Text('No Image Taken'),
-                                alignment: Alignment.center),
-                            SizedBox(
-                              width: 10,
+                       _imageUrlController.text.isNotEmpty && _storedImagePath != null ? 
+                      Container(
+                        height: 700,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                           /*  Center(child: Text('Error: $_error')), */
+                                               
+                            Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: <Widget>[
+    imagesFromAPI.length == 3? 
+    new FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    ) :
+   getUpdatePicker(),
+    ],
+    ) ,
+                           Expanded(
+                              child: 
+                              
+                              buildGridView(context),
                             ),
-                            Expanded(
-                              child: FlatButton.icon(
-                                icon: Icon(Icons.camera),
-                                label: Text('Take Pickture'),
-                                textColor: Color(0xFFFF9000),
-                                onPressed: () {
-                                  _showSelectionDialog(context);
-                                  setState(() {
-                                    _forSaleCrop.imageUrl == null;
-                                  });
-                                },
-                              ),
-                            ),
+
+                             Expanded(
+                              child: 
+                              
+                              newGridView(context),
+                            ) 
+
+                           
                           ],
                         ),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) :
+
+                      imagesFromAPI  == null ? 
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                           getCreatePicker(),
+    Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+  ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                             shape: BoxShape.rectangle,
                             border: Border.all(
                               color: Colors.blue,
@@ -1258,7 +1555,61 @@ Navigator.of(context).pop();
                         padding: EdgeInsets.symmetric(
                             vertical: 0.5, horizontal: 1.0),
                         margin: EdgeInsets.all(10.0),
-                      ),
+                      ) :
+                    imagesFromAPI.length == 3? 
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+    new FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    ),
+    
+    Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+    ])) :
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                         getCreatePicker(),
+                          Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+                             ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) ,
                     ],
                   ),
                 ),
@@ -1266,4 +1617,173 @@ Navigator.of(context).pop();
             ),
     );
   }
+  
+  Widget getUpdatePicker(){
+      if(imagesFromAPI.length == 3){
+return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+      }
+else
+    if(imagesFromAPI == null){
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ));
+  }
+  else if (imagesFromAPI.length < 3){
+    if(imagesFromPhone.length < 3 && imagesFromAPI.length <= 1 ){
+       return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ));
+
+    } else {
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+
+    }
+
+  }
+  else {
+     return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    
+  }
+  }
+
+
+
+
+
+
+  Widget getCreatePicker() {
+if(imagesFromPhone?.isEmpty ?? true){
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    }
+    else if (imagesFromPhone.length < 3) {
+ return  FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+}
+    else {
+ return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    
+}
+  }
+  
 }

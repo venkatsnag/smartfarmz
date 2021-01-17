@@ -31,9 +31,16 @@ class MachineryItem extends StatelessWidget {
     final machinery = Provider.of<MachineryItemNew>(context);
     
     final authData = Provider.of<Auth>(context, listen: false);
+var imageUrls;
+List<String> networkImages;
+ machinery?.imageUrl?.isEmpty ?? true ? machinery.imageUrl : imageUrls = machinery.imageUrl.split(",") ;
 
+   networkImages = imageUrls;
     return GridTile(
-      child: GestureDetector
+      child: Material(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      clipBehavior: Clip.antiAlias,
+      child:GestureDetector
       (
         onTap: (){
           Navigator.of(context).pushNamed(MachineryDetailScreen.routeName, 
@@ -45,11 +52,17 @@ class MachineryItem extends StatelessWidget {
         machinery?.imageUrl?.isEmpty ?? true ?
         Image.network('https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=375&q=80 375w', fit:BoxFit.cover)
       :
-    Image.network(machinery.imageUrl, fit:BoxFit.cover,
+    Image.network(networkImages[0], fit:BoxFit.cover,
   
       ),
-     ),
-    footer: GridTileBar(
+     ),),
+    footer: Material(
+            color: Colors.transparent,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:GridTileBar(
       backgroundColor: Colors.black54,
       /* leading: Consumer<Crop>(
               builder: (ctx, crop, _) => IconButton(icon: 
@@ -65,7 +78,7 @@ class MachineryItem extends StatelessWidget {
       
       ),
      
-      ),
+      ),),
       
      );
     /* return 

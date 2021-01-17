@@ -3,10 +3,10 @@ import 'package:flutter_icons/flutter_icons.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/badge.dart';
 import 'package:provider/provider.dart';
-import '../widgets/crop_for_sale_grid_user.dart';
+import '../widgets/machinery_forSaleRental_grid.dart';
 import '../l10n/gallery_localizations.dart';
-import './crop_sale_anounce_screen.dart';
-import '../providers/crops.dart';
+import './machinery_rental_anounce_screen.dart';
+import '../providers/machinery.dart';
 import '../providers/auth.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:share/share.dart';
@@ -20,50 +20,61 @@ enum FilterOptions{
 
 }
 
-class CropsForSaleOverviewScreenUser extends StatefulWidget {
+class MachineryForSaleRentalOverviewScreen extends StatefulWidget {
 
-  static const routeName = '/crops-for-sale-overview-user';
+  static const routeName = '/machinery-for-sale-overview';
   @override
-  _CropsForSaleOverviewScreenUserState createState() => _CropsForSaleOverviewScreenUserState();
+  _MachineryForSaleRentalOverviewScreenState createState() => _MachineryForSaleRentalOverviewScreenState();
 }
 
-class _CropsForSaleOverviewScreenUserState extends State<CropsForSaleOverviewScreenUser> {
+class _MachineryForSaleRentalOverviewScreenState extends State<MachineryForSaleRentalOverviewScreen> {
 
 var _showOnlyFavorites = false;
 var _isInit = true;
+var transType;
+var viewerType;
   @override
   void initState() {
-     _refreshCrops(context);
+
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
- /*  if(_isInit){
-Provider.of<Crops>(context).fetchCrops();
+ if(_isInit){
+ final routes = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+ final dynamic type = routes['type'];
+ final dynamic viewer = routes['viewer'];
+ transType = type;
+ viewerType = viewer;
   }
   _isInit = false;
-    super.didChangeDependencies(); */
+    super.didChangeDependencies(); 
   }
 
-   Future<void> _refreshCrops(BuildContext context) async {
-     //final userId = ModalRoute.of(context).settings.arguments;
+/*  Future<void> _refreshMachinery(BuildContext context) async {
+     final routes = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+     final dynamic type = routes['type'];
      //if(userId != null){
-await Provider.of<Crops>(context,listen: false).fetchUserCropsForSale();
+       type == 'sale' ?
+await Provider.of<Machinery>(context,listen: false).fetchMachineryForSale()
+: await Provider.of<Machinery>(context,listen: false).fetchMachineryForRental();;
      //}
-  }
+  }  */
 
 
 @override
 Widget build(BuildContext context) {
-
-  WidgetsBinding.instance.addPostFrameCallback((_) => _refreshCrops(context));
+  //final authData = Provider.of<Auth>(context, listen: false);
+  //String type;
+  
+  //WidgetsBinding.instance.addPostFrameCallback((_) => _refreshMachinery(context));
   return  Consumer<Auth>
       (builder: (ctx, auth, _) => Scaffold(
       appBar: AppBar(
         
-        title: auth.isAuth ? Text(GalleryLocalizations.of(context).allCropsForSale,) 
-        : Text(GalleryLocalizations.of(context).login_Signup,) ,
+        title: transType == 'sale' ? ( viewerType == 'user' ? Text(GalleryLocalizations.of(context).mymachineryForSale,) : Text(GalleryLocalizations.of(context).allMachineryForSale,) )
+        : ( viewerType == 'user' ? Text(GalleryLocalizations.of(context).mymachineryForRental,)  : Text(GalleryLocalizations.of(context).allMachineryForRental,) ) ,
         //title: auth.isAuth ? Text(AppLocalizations.of(context).translate('crop_title'),) : 
        // Text(AppLocalizations.of(context).translate('login_Signup'),),
         /* actions: <Widget>[
@@ -97,7 +108,10 @@ Widget build(BuildContext context) {
       ),
      //drawer: AppDrwaer(),
       body: Container( child: 
-          auth.isAuth ? CropsForSaleGridUser() : 
+          auth.isAuth ? 
+          MachineryForSaleRentalGrid()
+          //MachineryForSaleRentalGrid() 
+          : 
       
        Banner()     
       ,
@@ -110,16 +124,16 @@ Widget build(BuildContext context) {
      floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: new Visibility( 
-        visible: true,
-       child: auth.isAuth ?
+        visible: viewerType == 'user' ? true : false,
+       child: 
        FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
- Navigator.of(context).pushNamed(CropSaleAnouncementScreen.routeName, arguments:{'id': null, 'action': 'create'});
+ Navigator.of(context).pushNamed(MachinerySaleAnouncementScreen.routeName, arguments: {'id': null, 'action': 'create', 'type':transType});
          // print(loadedCrops.id);
 
-      },) : FloatingActionButton(onPressed: (){},),
+      },),
       ),
-     bottomNavigationBar: BottomAppBar(
+     bottomNavigationBar:  viewerType == 'user' ? BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 4.0,
       child: _buildTabsBar(context),
@@ -128,7 +142,7 @@ Widget build(BuildContext context) {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,), */
       
-      ),  
+      ) : SizedBox(),  
      
       
       ),
@@ -150,9 +164,11 @@ Widget build(BuildContext context) {
           onPressed: (){
             Navigator.pushNamed(context, '/farmer_home_screen');
           },),
+
+         
           IconButton(icon:Icon(MaterialIcons.edit, color: Colors.grey[100]),
           onPressed: (){
-             Navigator.pushNamed(context, '/user-crops-sale');
+             Navigator.pushNamed(context, '/user-machinery-ForsaleRental');
           },),
           
        ],
@@ -220,6 +236,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
+              
               Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),

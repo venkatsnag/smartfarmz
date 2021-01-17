@@ -181,7 +181,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
       setState(() {
         //_storedImage = File(_imageFile.path);
 
-        _isLoading = true;
+        //_isLoading = true;
       });
       final userId = ModalRoute.of(context).settings.arguments;
 
@@ -192,7 +192,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
       //_getStateList();
       _getCountries();
       setState(() {
-        _isLoading = false;
+        //_isLoading = false;
       });
     });
     super.initState();
@@ -285,9 +285,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
       _storedImage = File(_imageFile.path);
       _storedImagePath = _imageFile.path;
     });
-    _saveImage();
+    //_saveImage();
     _uploadImageDialogue(context);
-    //Navigator.of(context).pop();
+   // Navigator.of(context).pop();
   }
 
 /*   Widget _setImageView() {
@@ -311,7 +311,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                       child: Text("Gallery"),
                       onTap: () {
                         _openGallery(context);
+                        
                       },
+                       
                     ),
                     Padding(padding: EdgeInsets.all(8.0)),
                     GestureDetector(
@@ -322,8 +324,12 @@ class UserProfileScreenState extends State<UserProfileScreen>
                     )
                   ],
                 ),
-              ));
+              )
+              
+              
+              );
         });
+        
   }
 
   Future<void> _takePicture(BuildContext context) async {
@@ -341,10 +347,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
     final appDir = await syspaths.getApplicationDocumentsDirectory();
     final fileName = path.basename(_imageFile.path);
     final savedImage = await _storedImage.copy('${appDir.path}/$fileName');
-    _saveImage();
+    //_saveImage();
 
     _uploadImageDialogue(context);
-    //Navigator.of(context).pop();
+   //Navigator.of(context).pop();
     //widget.onSelectImage();
   }
 
@@ -555,7 +561,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                               width: double.infinity ,*/
                                                                         )
                                                                       : '${userData.items[0].userImageUrl}'
-                                                                              .isNotEmpty
+                                                                              != null
                                                                           ? NetworkImage(
                                                                               '${userData.items[0].userImageUrl}',
                                                                             )
@@ -603,6 +609,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                     onPressed: () {
                                                       _showSelectionDialog(
                                                           context);
+                                                         
                                                     },
                                                   ),
                                                 ],
@@ -2183,7 +2190,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
               FlatButton(
                 child: Text("Okay"),
                 onPressed: () {
-                  _saveImage();
+                 _saveImage();
 
                   Navigator.of(context).pop();
                 },
@@ -2320,7 +2327,7 @@ class _BannerState extends State<Banner> {
             setState(() {
               _displayBanner = false;
             });
-            Navigator.pushReplacementNamed(context, '/guest_home_screen');
+            Navigator.pushReplacementNamed(context, '/main_home_screen');
           },
         ),
       ],

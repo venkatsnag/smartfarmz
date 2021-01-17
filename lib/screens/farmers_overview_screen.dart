@@ -11,6 +11,7 @@ import '../providers/auth.dart';
 import 'package:flutter/scheduler.dart';
 import '../widgets/farmers_item.dart';
 import '../screens/farmer_detail_screen.dart';
+import '../providers/apiClass.dart';
 
 class FarmersOverviewScreen extends StatefulWidget {
 
@@ -25,6 +26,7 @@ class FarmersOverviewScreen extends StatefulWidget {
   
 
 class _FarmersOverviewScreenState extends State<FarmersOverviewScreen> {
+  final apiurl = AppApi.api;
 
   List<UsersItem> _users = [];
    
@@ -223,7 +225,7 @@ Widget build(BuildContext context) {
             height: 150,
                 padding: const EdgeInsets.all(8.0),
                 child: _resultList[index]?.userImageUrl?.isEmpty ?? true ?
-        Image.asset('assets/img/Indian_farmer.png') :
+        Image.network('$apiurl/images/folder/Indian_farmer.jpg') :
     Image.network(_resultList[index].userImageUrl, fit:BoxFit.cover,
     ),), 
     

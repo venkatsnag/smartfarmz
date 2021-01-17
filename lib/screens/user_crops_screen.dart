@@ -31,7 +31,8 @@ await Provider.of<Crops>(context, listen: false).fetchCrops(true);
     //drawer: AppDrwaer(),
     body: auth.isAuth ?  FutureBuilder(
         future: _refreshCrops(context),
-          builder: (ctx, snapshot) => snapshot.connectionState == ConnectionState.waiting ? Center(
+          builder: (ctx, snapshot) => 
+          snapshot.connectionState == ConnectionState.waiting ? Center(
             child: CircularProgressIndicator(),) : 
             RefreshIndicator(
         onRefresh: () => _refreshCrops(context),
@@ -100,7 +101,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
-              Navigator.pushReplacementNamed(context, '/guest_home_screen');
+              Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),
       ],
