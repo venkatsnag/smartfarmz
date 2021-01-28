@@ -21,6 +21,7 @@ import 'package:share/share.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 import '../providers/auth.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import '../providers/apiClass.dart';
 
 
 class CropDetailScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class CropDetailScreen extends StatefulWidget {
 }
 
 class _CropDetailScreenState extends State<CropDetailScreen> {
-
+ final apiurl = AppApi.api;
   // Unit of measurements
 
 
@@ -78,7 +79,7 @@ int selectedIndex = 0;
           Navigator.of(context).pushNamed(CropSaleAnouncementScreen.routeName, arguments: {'id':loadedCrops.id, 'action':'create'});
          // print(loadedCrops.id);
         },) */
-authData.userType == 'Farmer' ?
+authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?
         PopupMenuButton<String>(
             onSelected: choiceAction,
             itemBuilder: (BuildContext context){
@@ -95,163 +96,465 @@ authData.userType == 'Farmer' ?
             
             body: 
             new SingleChildScrollView(
+              physics: ScrollPhysics(),
                         child: new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-Container(
-              width:  500,
-              height: 350,
-    child:
+ Wrap(direction: Axis.horizontal, children: <Widget>[
+    
     loadedCrops?.imageUrl?.isEmpty ?? true ?
-            Image.network('https://images.unsplash.com/photo-1572827137848-4d7955eb93d6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80 750w', fit:BoxFit.cover) :
-             
+            Image.network('$apiurl/images/folder/crops.jpg', fit:BoxFit.cover) :
+             new SizedBox(
+                  child:
             new Swiper(
+              itemWidth: 400.0,
+              itemHeight: 400.0,
+              
+              
+              //viewportFraction: 1.0,
         itemBuilder: (BuildContext context,int index){
-          return new Image.network(networkImages[index],fit: BoxFit.fill,);
+          return new Image.network(networkImages[index],  fit: BoxFit.fill,);
         },
         itemCount:networkImages.length,
         pagination: new SwiperPagination(),
         control: new SwiperControl(),
       ),
+       height: 300.0,
       ),
+      ]),
+
+       //First line
+              new Container(
+               
+                margin: const EdgeInsets.all(6.0),
+                padding: const EdgeInsets.all(6.0),
+                decoration:
+                    BoxDecoration(
+                    boxShadow: [
+                     BoxShadow(color: Colors.grey[100], spreadRadius: 1),
+                                 ],
+                    ),
+                child: 
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Chip(
+                                    label: new FaIcon(FontAwesomeIcons.seedling)
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Crop Name',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ]),
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Container(
+                                width: 120,
+                                margin: EdgeInsets.all(2),
+                                padding: const EdgeInsets.all(3.0),
+                                /*            decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)
+                              ), */
+
+                               child: new Column (
+                                    children: <Widget>[ 
+          
+                                    RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.title}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                   
+                                  ),
+                                ),
+                                
+                               
+                                
+                                
+                                
+                                ]),
+                              ),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),),
+
+
+
+                              
+                               Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  
+                            new Chip(
+                              label: new FaIcon(FontAwesomeIcons.handHoldingWater)
+                            ),
+                            
+                              RichText(
+                                    text: TextSpan(
+                                      text: 'Crop Method',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ), 
+                            ]), 
+
+                            Flexible(
+                             
+                                 child:Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              
+                                
+                               
+                                child: new Column (
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 
+                               children: <Widget>[ 
+                                        RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.cropMethod}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                ]
+                                ),
+                             
+                            ),
+                                    ),
+                          
+                                         ]
+                                 ),
+                                          ),
       
+//Second line
+              new Container(
+               
+                margin: const EdgeInsets.all(6.0),
+                padding: const EdgeInsets.all(6.0),
+                decoration:
+                    BoxDecoration(
+                    boxShadow: [
+                     BoxShadow(color: Colors.grey[100], spreadRadius: 1),
+                                 ],
+                    ),
+                child: 
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Chip(
+                                    label: new FaIcon(MaterialIcons.rounded_corner),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Crop Area',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ]),
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Container(
+                                width: 120,
+                                margin: EdgeInsets.all(2),
+                                padding: const EdgeInsets.all(3.0),
+                                /*            decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)
+                              ), */
+
+                               child: new Column (
+                                    children: <Widget>[ 
+          
+                                    RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.area}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                   
+                                  ),
+                                ),
+                                 RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.units}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                   
+                                  ),
+                                ),
+                                
+                               
+                                
+                                
+                                
+                                ]),
+                              ),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),),
+
+
+
+                              
+                               Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  
+                            new Chip(
+                              label: new FaIcon(FontAwesomeIcons.viadeo),
+                            ),
+                            
+                              RichText(
+                                    text: TextSpan(
+                                      text: 'Seed Variety',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ), 
+                            ]), 
+
+                            Flexible(
+                             
+                                 child:Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              
+                                
+                               
+                                child: new Column (
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 
+                               children: <Widget>[ 
+                                        RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.seedVariety}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                ]
+                                ),
+                             
+                            ),
+                                    ),
+                          
+                                         ]
+                                 ),
+                                          ),
+
+//Third line
+              new Container(
+               
+                margin: const EdgeInsets.all(6.0),
+                padding: const EdgeInsets.all(6.0),
+                decoration:
+                    BoxDecoration(
+                    boxShadow: [
+                     BoxShadow(color: Colors.grey[100], spreadRadius: 1),
+                                 ],
+                    ),
+                child: 
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Chip(
+                                    label: new FaIcon(FontAwesomeIcons.calendarDay),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Seeding Date',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ]),
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Container(
+                                width: 120,
+                                margin: EdgeInsets.all(2),
+                                padding: const EdgeInsets.all(3.0),
+                                /*            decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)
+                              ), */
+
+                               child: new Column (
+                                    children: <Widget>[ 
+          
+                                    RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.seedingDate}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                   
+                                  ),
+                                ),
+                                
+                                
+                               
+                                
+                                
+                                
+                                ]),
+                              ),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),),
+
+
+
+                              
+                               Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  
+                            new Chip(
+                              label: new FaIcon(FontAwesomeIcons.calendarAlt),
+                            ),
+                            
+                              RichText(
+                                    text: TextSpan(
+                                      text: 'Expected \nHarvest Data',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ), 
+                            ]), 
+
+                            Flexible(
+                             
+                                 child:Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              
+                                
+                               
+                                child: new Column (
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 
+                               children: <Widget>[ 
+                                        RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.expectedHarvestDate}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                ]
+                                ),
+                             
+                            ),
+                                    ),
+                          
+                                         ]
+                                 ),
+                                          ),
+
+
       Padding(
                  padding: const EdgeInsets.all(8.0),
-                 child: Container(
-                   margin: EdgeInsets.all(10),
-                   child: Text('${loadedCrops.title}'),
+                 child: 
+                 
+                 
+                 Row(children: [Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  
+                            new Chip(
+                              label: new FaIcon(FontAwesomeIcons.clipboardList),
+                            ),
+                            
+                              RichText(
+                                    text: TextSpan(
+                                      text: 'Crop \nDescription',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ), 
+                            ]), 
+
+                            Flexible(
+                             
+                                 child:Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              
+                                
+                               
+                                child: new Column (
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 
+                               children: <Widget>[ 
+                                        RichText(
+                                  text: TextSpan(
+                                    text: '${loadedCrops.description}',
+                                    style: TextStyle(
+                                        color: Colors.black.withOpacity(0.6),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                ]
+                                ),
+                             
+                            ),
+                                    ),],
+                  
+                   
+                  
                    
                    
                  ),
                  
                  
-               ),
-               Stack(children: <Widget>[
-                 Column(children: <Widget>[
-                    RichText(
-                     text: TextSpan(
-                      text: 'Seed Variety : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.seedVariety}'),
-                  ],
-                  ),
-                  ),
-                   RichText(
-                     text: TextSpan(
-                      text: 'Farmer : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.farmer}')
-                  ],
-                  ),
-                  ),
-                  
-                  RichText(
-                     text: TextSpan(
-                      text: 'Crop Method : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.cropMethod}'),
-                  ],
-                  ),
-                  ),
+               ), 
+               
 
-                                             
-
-                  
-
-                  RichText(
-                     text: TextSpan(
-                      text: 'Investor : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.investor}'),
-                  ],
-                  ),
-                  ),
-
-                 
-
-                 Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[ RichText(
-                     text: TextSpan(
-                      text: 'Total crop Area : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.area}'),
-                  ],
-                  ),
-                  
-                  ),
-
-                  RichText(
-                     text: TextSpan(
-                      
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: " ${loadedCrops.units}'s"),
-                  ],
-                  ),
-                  
-                  ),
-                  
-                  ],),
-
-                    RichText(
-                     text: TextSpan(
-                      text: 'Description : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.description}'),
-                  ],
-                  ),
-                  ),
-
-                  RichText(
-                     text: TextSpan(
-                      text: 'Seeding Date : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.seedingDate}'),
-                  ],
-                  ),
-                  ),
-                    RichText(
-                     text: TextSpan(
-                      text: 'Price : ',
-                      
-                    style: TextStyle(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.bold),
-                    children: <TextSpan>[
-      
-                  TextSpan(text: ' ${loadedCrops.expectedHarvestDate}'),
-                  ],
-                  ),
-                  ),
-                  
-                   ]),
-                 
-               ])
-
-      ])),
+      ]
+      )
+      ),
    
            
                 

@@ -5,57 +5,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 import './apiClass.dart';
+import './users.dart';
+import './user_profiles.dart';
 
-class  UsersItem with ChangeNotifier {
-final String id;
-String userName;
-String userFirstname;
-String userLastname;
-String userType;
-String userEmail;
-String userMobile;
-String userImageUrl;
-String userId;
-String state;
-String city;
-String country;
-String userVillage;
-String userCrops;
-String message;
-bool isFavorite;
-
-
-
-  UsersItem({
-  @required this.id,  
-  this.userName,
-  @required this.userType, 
-  @required this.userFirstname,
-  @required this.userLastname,
-  @required this.userEmail,  
-  this.userImageUrl,
-  this.userMobile, 
-  this.userId, 
-  this.state,
-  this.city,
-  this.country,
-   this.userVillage,
-  this.userCrops,
-  this.message,
-   this.isFavorite = false,
-  
-   });
-
-   void _setFavValue(bool newValue){
-  isFavorite = newValue;
-   notifyListeners();
-}
- 
-}
-
-
-
-class Users with ChangeNotifier{
+class Chats with ChangeNotifier{
 
 final apiurl = AppApi.api;
 
@@ -81,7 +34,7 @@ List<UsersItem> _items = [];
   final String userId;
    final String userType;
 
-  Users(this.authToken, this.userId, this.userType, this._items);
+  Chats(this.authToken, this.userId, this.userType, this._items);
 
 List<UsersItem> get items{
 
@@ -296,7 +249,7 @@ final String imageUrl = '$apiurl/images/$picName/$picName.jpg';
     );
     _items[userIndex] = updateUser;
     notifyListeners();
-   
+    print(response.body);
   }else{
     print('...');
 
@@ -330,7 +283,7 @@ void updatePassword(String userEmail, UsersItem updateUser) async {
     );
     //_items[userIndex] = updateUser;
     notifyListeners();
-    
+    print(response.body);
   }
   void resetPassword(String userEmail, UsersItem updateUser) async {
 
@@ -359,13 +312,27 @@ void updatePassword(String userEmail, UsersItem updateUser) async {
     );
     //_items[userIndex] = updateUser;
     notifyListeners();
-    //print(response.body);
+    print(response.body);
   }
 
 
+Future<void> createSupportTicket(UserProfieItem ticket) async {
 
+   Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
+    final url = '$apiurl/support/ticket';
+    final response = await http.post(url, body: json.encode({
+      'name': ticket.userName,
+      'email': ticket.userEmail,
+      'message': ticket.message,
+      
+      
+
+    }),
+    headers: headers,
+    );
+    //_items[userIndex] = updateUser;
+    notifyListeners();
+    print(response.body);
+  }
 
 }
-
-
-

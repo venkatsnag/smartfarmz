@@ -96,7 +96,7 @@ var _isLoading = false;
     floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: new Visibility( 
-        visible: authData.userType == 'Farmer' ? true : false,
+        visible: authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer' ? true : false,
        child: auth.isAuth ?
        FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
@@ -109,7 +109,7 @@ var _isLoading = false;
       shape: CircularNotchedRectangle(),
       notchMargin: 4.0,
       child: 
-      authData.userType == 'Farmer' ?
+      authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer' ?
       _buildTabsBar(context) : null,
       
      /*  new Row(

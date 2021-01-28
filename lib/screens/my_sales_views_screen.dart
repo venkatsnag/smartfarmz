@@ -139,7 +139,7 @@ class _MySalesViewsState extends State<MySalesViews> {
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: new Visibility( 
         visible: false,
-       child: auth.userType == 'Farmer' ?
+       child: auth.userType == 'Farmer' || auth.userType == 'Hobby/DYIFarmer' ?
        FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
  Navigator.of(context).pushNamed(MachinerySaleAnouncementScreen.routeName, arguments: {'id': null, 'action': 'create', 'type':type});
@@ -150,7 +150,7 @@ class _MySalesViewsState extends State<MySalesViews> {
      bottomNavigationBar: BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 4.0,
-      child: auth.userType == 'Farmer' ?_buildTabsBar(context) : null,
+      child: auth.userType == 'Farmer' || auth.userType == 'Hobby/DYIFarmer' ?_buildTabsBar(context) : null,
       
      /*  new Row(
         mainAxisSize: MainAxisSize.max,

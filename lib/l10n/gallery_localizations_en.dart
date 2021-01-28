@@ -25,6 +25,9 @@ class GalleryLocalizationsEn extends GalleryLocalizations {
   String get market_prices => 'Today\'s Market Prices';
 
   @override
+  String get profileCompReminder => 'Important Notice! Please complete your Profile!';
+
+  @override
   String get cropExpensesTitle => 'Total Crop Expesnes';
 
   @override
@@ -56,6 +59,7 @@ class GalleryLocalizationsEn extends GalleryLocalizations {
 
   @override
   String get allMachineryForRental => 'Rent Machinery & Tools';
+
 
 
   @override

@@ -62,7 +62,7 @@ loadedMachinery?.imageUrl?.isEmpty ?? true ? loadedMachinery.imageUrl : imageUrl
           Navigator.of(context).pushNamed(CropSaleAnouncementScreen.routeName, arguments: {'id':loadedCrops.id, 'action':'create'});
          // print(loadedCrops.id);
         },) */
-authData.userType == 'Farmer' ?
+authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?
         PopupMenuButton<String>(
             onSelected: choiceAction,
             itemBuilder: (BuildContext context){

@@ -92,7 +92,7 @@ final salesData = Provider.of<Sales>(context, listen: false);
    
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: 
-      authData.userType == 'Farmer' ?
+      authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?
     FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
  Navigator.of(context).pushNamed(AddSaleScreen.routeName, arguments: args );

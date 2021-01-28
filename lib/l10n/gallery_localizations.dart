@@ -191,6 +191,9 @@ abstract class GalleryLocalizations {
 // Sign in label to sign into website.
   String get login_Signup; 
 
+  // Sign in label to sign into website.
+  String get profileCompReminder; 
+
   // Main App Bar Title.
   String get mainTitle;
 

@@ -44,7 +44,7 @@ var _isInit = true;
         final dynamic userData = Provider.of<Auth>(context, listen: false);
         String users = '${userData.userType}';
         String userType;
-        users == 'Farmer' ? 
+        users == 'Farmer' ||  users == 'Hobby/DYIFarmer' ? 
         userType = 'Buyer' : 
         userType = 'Farmer';
 
@@ -84,15 +84,19 @@ if(_searchController.text != ''){
    for (var userSnapshot = 0; userSnapshot < _allResults.length; ++userSnapshot){
 
     //String buyItem = _users[0].userCrops.toLowerCase();
+    
     var buyItem = _users[userSnapshot].userCrops.toLowerCase();
     var village = _users[userSnapshot].userVillage.toLowerCase();
     var state = _users[userSnapshot].state.toLowerCase();
+
     if(buyItem.contains(_searchController.text.toLowerCase()) 
     || village.contains(_searchController.text.toLowerCase())
     || state.contains(_searchController.text.toLowerCase())
     ){
       showResults.add( _allResults[userSnapshot]);
    
+  
+
   }
    
   }
@@ -118,7 +122,7 @@ resultsLoaded = getusersStreamSnapShot(context);
    Future<void> _refreshUsers(BuildContext context) async {
      //final userId = ModalRoute.of(context).settings.arguments;
      //if(userId != null){
-      userT == 'Farmer' ?
+      userT == 'Farmer' || userT == 'Hobby/DYIFarmer' ?
 await Provider.of<Users>(context,listen: false).getUsersByType('Buyer'):
 await Provider.of<Users>(context,listen: false).getUsersByType('Farmer');
      //}
@@ -133,7 +137,7 @@ final dynamic userData = Provider.of<Auth>(context, listen: false);
  String userType = '${userData.userType}';
    userT = userType;
 dynamic farmersData ;
-if(userT == 'Farmer') {
+if(userT == 'Farmer' || userT == 'Hobby/DYIFarmer') {
   farmersData = await Provider.of<Users>(context,listen: false).getUsersByType('Buyer');
 }
    else {

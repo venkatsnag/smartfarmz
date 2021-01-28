@@ -154,7 +154,7 @@ final notesData = Provider.of<CropLandNotes>(context, listen: false);
         floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: 
-    authData.userType == 'Farmer' ?
+    authData.userType == 'Farmer'  || authData.userType == 'Hobby/DYIFarmer'?
     FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
  Navigator.of(context).pushNamed(AddNotesScreen.routeName, arguments: args);
@@ -163,7 +163,7 @@ final notesData = Provider.of<CropLandNotes>(context, listen: false);
 
       },)  : null,
     bottomNavigationBar: 
-    authData.userType == 'Farmer' ?
+    authData.userType == 'Farmer'  || authData.userType == 'Hobby/DYIFarmer'?
     BottomAppBar(
       
       shape: CircularNotchedRectangle(),

@@ -84,6 +84,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
     'Farmer',
     'Buyer',
     'Investor',
+    'Hobby/DYIFarmer',
     
   ]; // Option 2
   String _selectedUserType;
@@ -103,6 +104,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
   String _myCountry;
   String _myDialCode;
   String authToken;
+  List<dynamic>  usersData;
 
   Future<String> _getStateList() async {
     final String url = '$apiurl/states';
@@ -185,8 +187,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
       });
       final userId = ModalRoute.of(context).settings.arguments;
 
-      await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
-
+      var users = await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
+      usersData = users;
       final token = await Provider.of<Auth>(context, listen: false).token;
       authToken = token;
       //_getStateList();
@@ -239,7 +241,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
 
     var res = await request.send();
     request.url;
-    print(res);
+    //print(res);
 
     _editUser.userImageUrl = imageUrl;
     _editUser.id = userId;
@@ -252,6 +254,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
     final String url = '$apiurl/upload/$userId';
     Map<String, String> id = {'id': '$picName.jpg'};
     Map<String, String> folderId = {'folderId': '$userId'};
+    final imageUrl = '$apiurl/images/$userId/$picName.jpg';
     //final String url = 'http://192.168.39.190:5000/upload';
     // Map<String,String> newMap = {'id':'$picName.jpg', 'userId' :'$userId'};
 
@@ -264,7 +267,10 @@ class UserProfileScreenState extends State<UserProfileScreen>
     //request.fields['usId'] = json.encode(usId);
     var res = await request.send();
     request.url;
-    print(res);
+   // print(res);
+    
+    _editUser.userImageUrl = imageUrl;
+    _editUser.id = userId;
     return res.reasonPhrase;
   }
 
@@ -463,7 +469,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     // WidgetsBinding.instance.addPostFrameCallback((_) => _refreshUser());
     //final userId = ModalRoute.of(context).settings.arguments as String;
-    final dynamic userData = Provider.of<UserProfiles>(context);
+    final dynamic userData = Provider.of<UserProfiles>(context, listen: false);
+    final crops =  userData.items;
 
     return Consumer<Auth>(
         builder: (ctx, auth, _) => new Scaffold(
@@ -560,10 +567,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                           /* fit: BoxFit.cover,
                               width: double.infinity ,*/
                                                                         )
-                                                                      : '${userData.items[0].userImageUrl}'
-                                                                              != null
+                                                                       : crops[i].userImageUrl != 'null'
                                                                           ? NetworkImage(
-                                                                              '${userData.items[0].userImageUrl}',
+                                                                              crops[i].userImageUrl,
                                                                             )
                                                                           : NetworkImage(
                                                                               "$apiurl/images/folder/buyer.jpg",
@@ -735,7 +741,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                 userId:
                                                                     '${userData.items[0].userId}',
                                                                 userImageUrl:
-                                                                    '${userData.items[0].userImageUrl}',
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                 userFirstname:
                                                                     value,
                                                                 userLastname: _editUser
@@ -870,8 +877,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                 id: '${userData.items[0].id}',
                                                                 userId:
                                                                     '${userData.items[0].userId}',
-                                                                userImageUrl:
-                                                                    '${userData.items[0].userImageUrl}',
+                                                               userImageUrl:
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                 userFirstname: _editUser
                                                                             .userFirstname !=
                                                                         null
@@ -1005,7 +1013,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                 userId:
                                                                     '${userData.items[0].userId}',
                                                                 userImageUrl:
-                                                                    '${userData.items[0].userImageUrl}',
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                 userFirstname: _editUser
                                                                             .userFirstname !=
                                                                         null
@@ -1197,7 +1206,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                 userId:
                                                                     '${userData.items[0].userId}',
                                                                 userImageUrl:
-                                                                    '${userData.items[0].userImageUrl}',
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                 userFirstname: _editUser
                                                                             .userFirstname !=
                                                                         null
@@ -1311,7 +1321,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                               userId:
                                                                   '${userData.items[0].userId}',
                                                               userImageUrl:
-                                                                  '${userData.items[0].userImageUrl}',
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                               userFirstname: _editUser
                                                                           .userFirstname !=
                                                                       null
@@ -1482,8 +1493,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                       id: '${userData.items[0].id}',
                                                                       userId:
                                                                           '${userData.items[0].userId}',
-                                                                      userImageUrl:
-                                                                          '${userData.items[0].userImageUrl}',
+                                                                    userImageUrl:
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                       userFirstname: _editUser.userFirstname !=
                                                                               null
                                                                           ? _editUser
@@ -1644,8 +1656,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                       id: '${userData.items[0].id}',
                                                                       userId:
                                                                           '${userData.items[0].userId}',
-                                                                      userImageUrl:
-                                                                          '${userData.items[0].userImageUrl}',
+                                                                     userImageUrl:
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                       userFirstname: _editUser.userFirstname !=
                                                                               null
                                                                           ? _editUser
@@ -1805,7 +1818,8 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                                         userId:
                                                                             '${userData.items[0].userId}',
                                                                         userImageUrl:
-                                                                            '${userData.items[0].userImageUrl}',
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                                         userFirstname: _editUser.userFirstname !=
                                                                                 null
                                                                             ? _editUser.userFirstname
@@ -1931,8 +1945,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                               id: '${userData.items[0].id}',
                                                               userId:
                                                                   '${userData.items[0].userId}',
-                                                              userImageUrl:
-                                                                  '${userData.items[0].userImageUrl}',
+                                                             userImageUrl:
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                               userFirstname: _editUser
                                                                           .userFirstname !=
                                                                       null
@@ -2021,7 +2036,7 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                               MainAxisSize.min,
                                                           children: <Widget>[
                                                             '${userData.items[0].userType}' ==
-                                                                    'Farmer'
+                                                                    'Farmer' || '${userData.items[0].userType}' ==  'Hobby/DYIFarmer'
                                                                 ? Text(
                                                                     'Which crops you can grow?',
                                                                     style: TextStyle(
@@ -2080,8 +2095,9 @@ class UserProfileScreenState extends State<UserProfileScreen>
                                                               id: '${userData.items[0].id}',
                                                               userId:
                                                                   '${userData.items[0].userId}',
-                                                              userImageUrl:
-                                                                  '${userData.items[0].userImageUrl}',
+                                                             userImageUrl:
+                                                                _storedImage == null? 
+                                                                    '${userData.items[0].userImageUrl}' : null,
                                                               userFirstname: _editUser
                                                                           .userFirstname !=
                                                                       null

@@ -87,6 +87,7 @@ import './widgets/machinery_forSaleRental_grid.dart';
 import './screens/user_machinary_forSaleRental_screen.dart';
 import './screens/my_sales_views_screen.dart';
 import './screens/main_home_screen.dart';
+import './screens/contact_us_pop_screen.dart';
 
 void main() {
   //SharedPreferences.setMockInitialValues({});
@@ -309,6 +310,7 @@ class MyApp extends StatelessWidget {
                 UserMachinerySaleRentalScreen(),
             MySalesViews.routeName: (ctx) => MySalesViews(),
             MainHomePage.routeName: (ctx) => MainHomePage(),
+            ContactUsPop.routeName: (ctx) => ContactUsPop(),
           },
 
           //Localization

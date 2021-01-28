@@ -26,15 +26,11 @@ class _MainHomePageState extends State<MainHomePage> {
     var userType;
     var userId;
     var userLetter;
+     List<dynamic> userData;
     var _isLoading;
     var _isInit = true;
    @override
-  void initState() {
-    
-    
-    super.initState();
-  }
-
+ 
 
 
   Future<void> _showSelectionDialog(BuildContext context) {
@@ -58,15 +54,103 @@ class _MainHomePageState extends State<MainHomePage> {
     ],);
         });
   }
+
+  Future<void> _showUserProfileIncompleteDialog(BuildContext context) {
+
+     // set up the button
+  Widget okButton = FlatButton(
+    child: Text("Go to profile page"),
+    onPressed: () {
+     Navigator.pushNamed(context, '/user-profile-screen');
+     },
+  );
+
+  Widget dismissButton = FlatButton(
+    child: Text("Dismiss"),
+    onPressed: () {
+     Navigator.pop(context);
+     },
+  );
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text('Complete your Profile'),
+              content: Stack(
+                      overflow: Overflow.visible,
+                      children: <Widget>[
+
+                          Text(GalleryLocalizations.of(context).profileCompReminder,
+                          style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6),
+                                          fontWeight: FontWeight.bold),
+                          ),
+                                      
+                                    
+                      ]),
+    actions: [
+      okButton,
+      dismissButton,
+    ],);
+        });
+  }
+
+  void refreshUserprofileDialogue() {
+    Future<dynamic>.delayed(Duration.zero).then((dynamic _) async {
+      setState(() {
+       
+
+        _isLoading = true;
+      });
+      var users = await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
+      userData = users;
+      var userVillage = '${users[0].userVillage}';
+      var userState = '${users[0].userState}';
+      var userCrops = '${users[0].userCrops}';
+     if(userVillage == 'NA' || userState == 'NA' || userCrops == 'NA'){
+       _showUserProfileIncompleteDialog(context);
+     }
+      
+      setState(() {
+        _isLoading = false;
+      });
+    });
+   
+  }
+
+    void initState() {
+    Future<dynamic>.delayed(Duration.zero).then((dynamic _) async {
+      setState(() {
+       
+
+        _isLoading = true;
+      });
+      var users = await Provider.of<UserProfiles>(context, listen: false).getusers(userId);
+      userData = users;
+      var userVillage = '${users[0].userVillage}';
+      var userState = '${users[0].userState}';
+      var userCrops = '${users[0].userCrops}';
+     if(userVillage == 'NA' || userState == 'NA' || userCrops == 'NA'){
+       _showUserProfileIncompleteDialog(context);
+     }
+      
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
   
   @override
   Widget build(BuildContext context) {
-    //WidgetsBinding.instance.addPostFrameCallback((_) => _photos(context));
+    //WidgetsBinding.instance.addPostFrameCallback((_) => refreshUserprofileDialogue());
    
     final dynamic userData = Provider.of<Auth>(context);
     String id = '${userData.userId}';
     //String initial = '${userData.userId[0]}';
      String   user = '${userData.userType}';
+     
       userType = user;
       userId = id;
      // userLetter = initial;
@@ -100,7 +184,7 @@ class _MainHomePageState extends State<MainHomePage> {
         padding: const EdgeInsets.all(8),
         childAspectRatio: 1,
         children: [
-         (userType == 'Farmer') ?
+         ( userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer') ?
  GridTile(
       
       child: Material(
@@ -109,7 +193,7 @@ class _MainHomePageState extends State<MainHomePage> {
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+          userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer' ?
           
           await Navigator.pushNamed(context,'/crops-overview',
     arguments: {
@@ -212,7 +296,7 @@ GridTile(
             
 
 //Second tile
- userType == 'Farmer'? 
+  userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'? 
 
 
             GridTile(
@@ -223,7 +307,7 @@ GridTile(
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+           userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
           
           await Navigator.pushNamed(context,'/fields-overview',
     arguments: {
@@ -316,7 +400,7 @@ GridTile(
             ) ) ,
 
 //Third Tile
-            userType == 'Farmer' ?
+            userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer' ?
             GridTile(
       
       child: Material(
@@ -325,7 +409,7 @@ GridTile(
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+           userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer' ?
           
           await Navigator.pushNamed(context,'/all-farmers-overview',
     arguments: {
@@ -389,7 +473,7 @@ GridTile(
             SizedBox()), 
 
             // Fourth Tile
-            userType == 'Farmer'?
+             userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
             GridTile(
       
       child: Material(
@@ -398,7 +482,7 @@ GridTile(
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+           userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
           
           await Navigator.pushNamed(context,'/my-sales-views',
     arguments: {
@@ -426,7 +510,7 @@ GridTile(
             ) : SizedBox(), 
 
             // Fifth Tile
-            userType == 'Farmer'?
+            userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
             GridTile(
       
       child: Material(
@@ -435,7 +519,7 @@ GridTile(
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+           userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
           
           await Navigator.pushNamed(context,'/machinery-for-sale-overview',
     arguments: {
@@ -464,7 +548,7 @@ GridTile(
             ): SizedBox(),
 
 // Sixth Tile
- userType == 'Farmer'?
+  userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
             GridTile(
       
       child: Material(
@@ -473,7 +557,7 @@ GridTile(
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+          userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
           
           await Navigator.pushNamed(context,'/machinery-for-sale-overview',
     arguments: {
@@ -620,6 +704,20 @@ _showLogoffDialog(message);
           style: TextStyle(color: Colors.white),)
           ],
           ),) : SizedBox(),
+             /*  SingleChildScrollView(
+  child:Column(
+  mainAxisSize: MainAxisSize.max,
+         children: <Widget>[
+         IconButton(icon:FaIcon(MaterialIcons.contact_phone, color: Colors.grey[100]
+          
+          ),
+          onPressed: (){
+           Navigator.pushNamed(context, '/contact');
+          },), 
+          Text('Contact Us',
+          style: TextStyle(color: Colors.white),)
+          ],
+          ),), */
           
        ],
       ),

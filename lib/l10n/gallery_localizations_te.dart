@@ -21,6 +21,9 @@ class GalleryLocalizationsTe extends GalleryLocalizations {
   @override
   String get signIn => 'సైన్ ఇన్ చేయండి';
 
+  @override
+  String get profileCompReminder => 'ముఖ్యమైన నోటీసు! దయచేసి మీ ప్రొఫైల్ ను పూర్తి చేయండి!';
+
     @override
   String get market_prices => 'నేటి మార్కెట్ ధరలు';
 

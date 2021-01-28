@@ -104,7 +104,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(UserCropsScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
 
          Divider(),
          userType == 'Farmer'?
@@ -115,7 +115,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(UserFieldsScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
 
          Divider(),
            userType == 'Farmer'?
@@ -126,7 +126,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(UserMachinerySaleRentalScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
 
          Divider(),
 
@@ -138,7 +138,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(ResetPasswordScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
          
            Divider(),
 

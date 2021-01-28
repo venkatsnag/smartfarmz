@@ -111,7 +111,7 @@ static const routeName = '/farmer_home_screen';
             ),
             elevation: 4.0,
           ),
-          drawer:  userType == 'Farmer'? AppDrwaer() : SizedBox(),
+          drawer:  userType == 'Farmer' || userType == 'Hobby/DYIFarmer'? AppDrwaer() : SizedBox(),
       body:
        
        GridView.count(
@@ -222,7 +222,7 @@ class _GridDemoPhotoItem extends StatelessWidget {
       child: InkWell(
         onTap: ()async {
           //route: _GridTitleText(photo.route);
-          userType == 'Farmer'?
+          userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
           
           await Navigator.pushNamed(context, photo.navi,
     arguments: {

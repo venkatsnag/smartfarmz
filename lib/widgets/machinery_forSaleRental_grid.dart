@@ -23,6 +23,7 @@ class MachineryForSaleRentalGrid extends StatefulWidget {
 
   static const routeName = '/machinery-for-saleRental';
   @override
+  
 
   _MachineryForSaleRentalGridState createState() => _MachineryForSaleRentalGridState();
 }
@@ -36,6 +37,7 @@ class _MachineryForSaleRentalGridState extends State<MachineryForSaleRentalGrid>
   var _isLoading = false;
   var transType;
 var viewerType;
+
   @override
   
   void initState() {

@@ -104,15 +104,12 @@ Future<void> _showErrorDialog(String message){
          
           child: Text('Okay'),
            onPressed: (){
-              /*  authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?  
-            Navigator.of(ctx).pushReplacementNamed('/farmer_home_screen') 
-            : authData.userType == 'Buyer' ? 
-           Navigator.of(ctx).pushReplacementNamed('/buyer_home_screen'): Navigator.pushNamed(context, '/investor_home_screen');
-            */
-            Navigator.of(ctx).pushReplacementNamed('/main_home_screen');
+              
+             //_userProfilePage();
+           Navigator.of(ctx).pushReplacementNamed('/main_home_screen');
            // Navigator.push<dynamic>(context, MaterialPageRoute<dynamic>(builder: (_) => MainHomePage()));
            setState(() {
-           //Navigator.pushReplacementNamed(ctx, '/user-profile-screen', arguments: authData.userId);
+           
            
       _isLoading = false;
     }); 
@@ -176,8 +173,12 @@ Future<void> _showErrorDialog(String message){
 
 void _userProfilePage(){
 
-dynamic userData = Provider.of<Auth>(context);
- Navigator.pushNamed(context, '/user-profile-screen', arguments: userData.userId);
+dynamic userData = Provider.of<Auth>(context, listen: false);
+/* Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => SecondRoute()),
+  ); */
+ Navigator.pushReplacementNamed(context, '/user-profile-screen', arguments: userData.userId);
   }
    
 
@@ -236,9 +237,9 @@ if (_authMode == AuthMode.Login) {
     else {
       // Sign user up
    await Provider.of<Auth>(context, listen: false).signup(_authData['email'], _authData['password'], _authData['userType'], _authData['userMobile'], _authData['firstName'], _authData['lastName'] 
-    
+   
     );
-
+     
       var message = 'Signup sucessful! Welcome to SmartFarmZ. Please complete your profile before we can give you access.';
      _showSucessDialog(message);
    

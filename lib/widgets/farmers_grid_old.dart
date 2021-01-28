@@ -43,7 +43,7 @@ class _FarmersGridState extends State<FarmersGrid> {
         final dynamic userData = Provider.of<Auth>(context, listen: false);
         String users = '${userData.userType}';
         String userType;
-        users == 'Farmer' ? 
+        users == 'Farmer' ||  users == 'Hobby/DYIFarmer'? 
         userType = 'Buyer' : 
         userType = 'Farmer';
 
