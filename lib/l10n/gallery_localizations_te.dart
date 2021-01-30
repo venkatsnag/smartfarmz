@@ -21,6 +21,9 @@ class GalleryLocalizationsTe extends GalleryLocalizations {
   @override
   String get signIn => 'సైన్ ఇన్ చేయండి';
 
+  @override
+  String get profileCompReminder => 'ముఖ్యమైన నోటీసు! దయచేసి మీ ప్రొఫైల్ ను పూర్తి చేయండి!';
+
     @override
   String get market_prices => 'నేటి మార్కెట్ ధరలు';
 
@@ -44,6 +47,25 @@ class GalleryLocalizationsTe extends GalleryLocalizations {
 
    @override
   String get landMachineryTitle => 'భూమి యంత్రాలు';
+
+  @override
+  String get mymachineryForSale => 'నా పరికరాలు అమ్మకం ప్రకటనలు';
+
+  @override
+  String get nomachineryForSale => 'మీకు అమ్మకానికి యంత్రాలు లేవు';
+
+  @override
+  String get mymachineryForRental => 'నా పరికరాలు అద్దె ప్రకటనలు';
+  @override
+  String get nomachineryForRental => 'మీకు అద్దెకు యంత్రాలు లేవు';
+  @override
+  String get mySaleAndRentalAnouncement => 'నా అమ్మకాలు & అద్దె ప్రకటనలు';
+
+  @override
+  String get allMachineryForSale => 'యంత్రాలు & ఉపకరణాలు కొనుగోలు';
+
+  @override
+  String get allMachineryForRental => 'యంత్రాలు & ఉపకరణాలు అద్దెకు';
 
   @override
   String get cropSalesTitle => 'పంట అమ్మకాలు';

@@ -25,6 +25,9 @@ class GalleryLocalizationsEn extends GalleryLocalizations {
   String get market_prices => 'Today\'s Market Prices';
 
   @override
+  String get profileCompReminder => 'Important Notice! Please complete your Profile!';
+
+  @override
   String get cropExpensesTitle => 'Total Crop Expesnes';
 
   @override
@@ -46,10 +49,33 @@ class GalleryLocalizationsEn extends GalleryLocalizations {
   String get landMachineryTitle => 'Machinery in this Land';
 
   @override
+  String get mySaleAndRentalAnouncement => 'My Sales & Rental anouncements';
+
+  @override
+  String get mymachineryForSale => 'My Machinery sale anouncements';
+
+   @override
+  String get allMachineryForSale => 'Buy Machinery & Tools';
+
+  @override
+  String get allMachineryForRental => 'Rent Machinery & Tools';
+
+
+
+  @override
+  String get mymachineryForRental => 'Machinery rental anouncements';
+
+    @override
+  String get nomachineryForSale => 'You dont have any machinery for sale!';
+
+  @override
+  String get nomachineryForRental => 'You dont have any machinery for rental!';
+
+  @override
   String get cropSalesTitle => 'Total Sales';
 
    @override
-  String get myCropforSale => 'My Sales anouncements';
+  String get myCropforSale => 'Crop Sales anouncements';
 
      @override
   String get cropforInvestments => 'Crops looking for Investments';

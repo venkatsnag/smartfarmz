@@ -154,7 +154,7 @@ final notesData = Provider.of<CropLandNotes>(context, listen: false);
         floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: 
-    authData.userType == 'Farmer' ?
+    authData.userType == 'Farmer'  || authData.userType == 'Hobby/DYIFarmer'?
     FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
  Navigator.of(context).pushNamed(AddNotesScreen.routeName, arguments: args);
@@ -163,7 +163,7 @@ final notesData = Provider.of<CropLandNotes>(context, listen: false);
 
       },)  : null,
     bottomNavigationBar: 
-    authData.userType == 'Farmer' ?
+    authData.userType == 'Farmer'  || authData.userType == 'Hobby/DYIFarmer'?
     BottomAppBar(
       
       shape: CircularNotchedRectangle(),
@@ -250,68 +250,3 @@ final notesData = Provider.of<CropLandNotes>(context, listen: false);
  
 
 
-/* class Banner extends StatefulWidget {
-  const Banner();
-
-  @override
-  _BannerState createState() => _BannerState();
-}
-
-class _BannerState extends State<Banner> {
-  
-  var _showMultipleActions = true;
-  var _displayBanner = true;
-  var _showLeading = true; */
-
-/*   void handleDemoAction(BannerAction action) {
-    setState(() {
-      switch (action) {
-        case BannerAction.reset:
-          _displayBanner = true;
-          
-          _showLeading = true;
-          break;
-       
-        case BannerAction.showLeading:
-          _showLeading = !_showLeading;
-          break;
-      }
-    });
-  } */
-
-  /* @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return MaterialBanner(
-      content: Text(GalleryLocalizations.of(context).bannerDemoText),
-      leading: _showLeading
-          ? CircleAvatar(
-              child: Icon(Icons.account_circle, color: colorScheme.onPrimary),
-              backgroundColor: colorScheme.primary,
-            )
-          : null,
-      actions: [
-        FlatButton(
-          child: Text(GalleryLocalizations.of(context).signIn),
-          onPressed: () {
-            setState(() {
-              _displayBanner = false;
-            });
-            Navigator.pushNamed(context, '/login');
-          },
-        ),
-         FlatButton(
-            child: Text(GalleryLocalizations.of(context).dismiss),
-            onPressed: () {
-               setState(() {
-                _displayBanner = false;
-              });
-              Navigator.pushNamed(context, '/guest_home_screen');
-            },
-          ),
-      ],
-      backgroundColor: colorScheme.background,
-    );
-
-    
-  } */

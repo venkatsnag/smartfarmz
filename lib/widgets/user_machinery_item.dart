@@ -25,6 +25,12 @@ await Provider.of<Machinery>(context,listen: false);
 
   
   Widget build(BuildContext context) {
+    List<String> networkImages;
+     var imageUrls;
+     imageUrl?.isEmpty ?? true ? imageUrl : imageUrls = imageUrl.split(",") ;
+     
+
+     networkImages = imageUrls;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _refreshMachinery(context));
 
@@ -51,7 +57,7 @@ String dummyImage = 'https://images.unsplash.com/photo-1599508704512-2f19efd1e35
     Text(type)  : Text(GalleryLocalizations.of(context).login_Signup,) ,
     leading: CircleAvatar(
       backgroundImage: imageUrl?.isEmpty ?? true ? NetworkImage(dummyImage) : 
-      NetworkImage(imageUrl),
+      NetworkImage(networkImages[0]),
     ),
     trailing: Container(
       width: 100,

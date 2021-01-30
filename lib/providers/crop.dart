@@ -25,7 +25,7 @@ String totalPlants;
 String authToken;
 final double price;
 String imageUrl;
-final String userId;
+String userId;
 final String location;
 bool isFavorite;
 int forSale;
@@ -37,6 +37,8 @@ int seekInvestment;
 String cropId;
 double investmentNeeded;
 double expectedTotalCropCost;
+String sellerName;
+String sellerContact;
 
 
 Crop({
@@ -71,6 +73,8 @@ Crop({
   this.investmentNeeded,
   this.expectedTotalCropCost,
   this.cropId,
+    this.sellerName,
+  this.sellerContact,
 });
 
 void _setFavValue(bool newValue){

@@ -14,6 +14,7 @@ import './crops_on_land_overview_screen.dart';
 import './crop_sale_anounce_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 
 class FieldDetailScreen extends StatefulWidget {
@@ -33,9 +34,12 @@ int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    //final crop = Provider.of<Crops>(context);
+    List<String> networkImages;
+    var imageUrls;
     final fieldid = ModalRoute.of(context).settings.arguments as String;
     final loadedFields = Provider.of<Fields>(context).findById(fieldid);
+    loadedFields?.imageUrl?.isEmpty ?? true ? loadedFields.imageUrl : imageUrls = loadedFields.imageUrl.split(",") ;
+    networkImages = imageUrls;
     /* var imageUrl = loadedCrops.imageUrl;
      dynamic img;
     if(  imageUrl.isEmpty) {
@@ -73,14 +77,23 @@ int selectedIndex = 0;
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-               
-            loadedFields.imageUrl?.isEmpty ? 
+            
+            Container(
+              width:  500,
+              height: 350,
+    child:
+    loadedFields?.imageUrl?.isEmpty ?? true ?
+              
             Image.network('https://images.unsplash.com/photo-1572827137848-4d7955eb93d6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80 750w', fit:BoxFit.cover) :
-                Image.network(loadedFields.imageUrl,
-                width: 600,            
-                height: 240,
-              fit: BoxFit.cover,
-              ),
+                  new Swiper(
+        itemBuilder: (BuildContext context,int index){
+          return new Image.network(networkImages[index],fit: BoxFit.fill,);
+        },
+        itemCount:networkImages.length,
+        pagination: new SwiperPagination(),
+        control: new SwiperControl(),
+      ),
+      ),
       
                Padding(
                  padding: const EdgeInsets.all(8.0),

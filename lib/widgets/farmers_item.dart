@@ -6,10 +6,11 @@ import '../providers/users.dart';
 
 import '../providers/auth.dart';
 import 'package:rating_bar/rating_bar.dart';
+import '../providers/apiClass.dart';
 
 class FarmerItem extends StatelessWidget {
 
- 
+ final apiurl = AppApi.api;
  
   //Map<String, String> headers = {'Authorization': 'Bearer $authToken'};
 
@@ -56,7 +57,7 @@ class FarmerItem extends StatelessWidget {
             height: 150,
                 padding: const EdgeInsets.all(8.0),
                 child: farmer?.userImageUrl?.isEmpty ?? true ?
-        Image.asset('assets/img/Indian_farmer.png') :
+        Image.network('$apiurl/images/folder/Indian_farmer.png') :
     Image.network(farmer.userImageUrl, fit:BoxFit.cover,
     ),), 
             new Container(

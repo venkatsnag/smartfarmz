@@ -5,6 +5,7 @@ import '../screens/user_crops_screen.dart';
 import '../screens/user_fields_screen.dart';
 import '../screens/reset_password.dart';
 import '../screens/user_crops_sale_screen.dart';
+import '../screens/user_machinary_forSaleRental_screen.dart';
 import '../providers/auth.dart';
 import '../providers/user_profiles.dart';
 
@@ -103,7 +104,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(UserCropsScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
 
          Divider(),
          userType == 'Farmer'?
@@ -114,7 +115,18 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(UserFieldsScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
+
+         Divider(),
+           userType == 'Farmer'?
+         ListTile(
+           leading: Icon(Icons.edit),
+           title: Text('Manage Machinery sales/Rental'),
+           onTap: (){
+             Navigator.of(context).pushNamed(UserMachinerySaleRentalScreen.routeName);
+
+           },
+         ) : Container(),
 
          Divider(),
 
@@ -126,7 +138,7 @@ class AppDrwaer extends StatelessWidget {
              Navigator.of(context).pushNamed(ResetPasswordScreen.routeName);
 
            },
-         ) : SizedBox(),
+         ) : Container(),
          
            Divider(),
 

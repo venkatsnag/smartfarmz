@@ -37,7 +37,7 @@ class _CropsForSaleGridUserState extends State<CropsForSaleGridUser> {
   void initState() {
   Future<dynamic>.delayed(Duration.zero).then((dynamic _) async {
       setState(() {
-       _isLoading = true;
+       //_isLoading = true;
       });
       const type = 'sale';
 
@@ -46,7 +46,7 @@ class _CropsForSaleGridUserState extends State<CropsForSaleGridUser> {
       await Provider.of<Crops>(context, listen: false).fetchUserCropsForSale();
       
       setState(() {
-        _isLoading = false;
+        //_isLoading = false;
       });
     });
     super.initState();
@@ -171,7 +171,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
-              Navigator.pushReplacementNamed(context, '/guest_home_screen');
+              Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),
       ],

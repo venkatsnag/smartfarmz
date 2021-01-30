@@ -191,7 +191,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
-              Navigator.pushReplacementNamed(context, '/guest_home_screen');
+              Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),
       ],

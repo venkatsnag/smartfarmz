@@ -95,6 +95,14 @@ class Auth with ChangeNotifier {
     return _userFullName;
   }
 
+  String get userFirstName {
+    return firstName;
+  }
+
+   String get userMobile {
+    return _userMobile;
+  }
+
   bool get isFBUser {
     return _isFBUser;
   }

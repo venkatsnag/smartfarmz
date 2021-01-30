@@ -68,93 +68,155 @@ final apiurl = AppApi.api;
     };
     var _isInit = true;
     var _isLoading = false;
+// Uppload Picture
 
-
-
-PickedFile _imageFile;
-   File _storedImage;
-   String _storedImagePath;
+  List<String> imagesFromAPI;
+  List<String> tempImages;
   
-  Future<String> uploadImage(dynamic filename) async {
+  String patchImage;
+  String _error;
+  String appendedImages;
+  List<dynamic> imagesFromPhone = List<dynamic>();
+  /* Future<File> _imageFromPhone; */
+  Widget buildGridView(BuildContext context) {
+    
+    return GridView.count(
+      crossAxisCount: 2,
+      children: 
+      (_imageUrlController.text.isEmpty) ?
+      List.generate(imagesFromPhone.length, (index) {
+             
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                
+                child:  Stack(
+                  children: <Widget>[
+                    Image.file(
+                      imagesFromPhone[index],
+        fit: BoxFit.cover,
+        width: double.infinity,
+        ),
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: InkWell(
+                        child: Icon(
+                          Icons.remove_circle,
+                          size: 25,
+                          color: Colors.red,
+                        ),
+                        onTap: () {
+                          setState(() {
+                             
+                              imagesFromPhone.replaceRange(index, index + 1, []);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ) 
+              );  
+            }) :
+      List.generate(imagesFromAPI.length, (index) {
+                  //var image = _editCrop.imageUrl[index];
+                  patchImage = imagesFromAPI[index];
+                 
+                  return Card(
+                    clipBehavior: Clip.antiAlias,
 
-      String version;
-  for (int i = 0; i < 500; i++){
-    version == i;
+                    child: 
+                   
+                    
+                    Stack(
+                      children: <Widget>[
+                        new Image.network(
+                          imagesFromAPI[index],
+                          width: 300,
+                          height: 300,
+                          fit: BoxFit.fill,
+                        ),
+                        Positioned(
+                          right: 5,
+                          top: 5,
+                          child: InkWell(
+                            child: Icon(
+                              Icons.remove_circle,
+                              size: 25,
+                              color: Colors.red,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                imagesFromAPI.remove(patchImage);
+                                String newImageUrls = jsonEncode(imagesFromAPI);
+                                imagesFromAPI.isNotEmpty
+                                    ? newImageUrls
+                                    : imagesFromAPI;
+
+                               
+                                appendedImages = imagesFromAPI.join(",");
+                                _addMachinery.imageUrl = appendedImages;
+                                
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ) 
+                  );
+                   
+                }),
+          
+           
+    );
   }
 
-    String pic = _addMachinery.landId + 'machinery' + _addMachinery.type + _addMachinery.model;
-    String userId = _addMachinery.userId;
-    String picName = pic.replaceAll("[^\\p{L}\\p{Z}]","");
-    final String url = '$apiurl/upload/$userId';
-    final imageUrl = '$apiurl/images/$userId/$picName.jpg';
-
-    
-    //final String url = 'http://192.168.39.190:5000/upload';
-   // Map<String,String> newMap = {'id':'$picName.jpg', 'userId' :'$userId'};
-    Map<String,String> id = {'id':'$picName.jpg'};
-    Map<String,String> folderId = {'folderId':'$userId'};
-    //Map<String,String> usId = {'usId' : '$userId'};
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-
-    request.files.add(await http.MultipartFile.fromPath('picture', filename));
-    request.fields['id'] = json.encode(id);
-    request.fields['folderId'] = json.encode(folderId);
-    //request.fields['usId'] = json.encode(usId);
-    var res = await request.send();
-    request.url;
-    print(res);    
-    _addMachinery.imageUrl = imageUrl;
-return  res.reasonPhrase; 
-}
-
-Future<String> updateImage(dynamic filename) async {
-
-
-      
-    String pic = _addMachinery.landId + 'machinery' + _addMachinery.type + _addMachinery.model;
-    String userId = _addMachinery.userId;
-    String picName = pic.replaceAll("[^\\p{L}\\p{Z}]","");
-    final String url = '$apiurl/upload/$userId';
-    final imageUrl = '$apiurl/images/$userId/$picName.jpg';
-   
-    //final String url = 'http://192.168.39.190:5000/upload';
-   // Map<String,String> newMap = {'id':'$picName.jpg', 'userId' :'$userId'};
-    Map<String,String> id = {'id':'$picName.jpg'};
-    Map<String,String> folderId = {'folderId':'$userId'};
-    //Map<String,String> usId = {'usId' : '$userId'};
-    var request = http.MultipartRequest('PUT', Uri.parse(url));
-
-    request.files.add(await http.MultipartFile.fromPath('picture', filename));
-    request.fields['id'] = json.encode(id);
-    request.fields['folderId'] = json.encode(folderId);
-    //request.fields['usId'] = json.encode(usId);
-    var res = await request.send();
-    request.url;
-    print(res);    
-return _addMachinery.imageUrl = imageUrl ; 
-}
-// Take picture
-    String state = "";
-
-    // Images camera selection
-  void _openGallery(BuildContext context) async {
-    final picker = ImagePicker();
-    var picture = await picker.getImage(source: ImageSource.gallery,
-          imageQuality: 85,
-      maxWidth: 600,);
-     _imageFile = picture;
-    
+  Widget newGridView(BuildContext context) {
+     
+      return GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(imagesFromPhone.length, (index) {
+             
+              return Card(
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  children: <Widget>[
+                  Image.file(
+                     imagesFromPhone[index],
+        fit: BoxFit.cover,
+        width: double.infinity,
+        ),
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: InkWell(
+                        child: Icon(
+                          Icons.remove_circle,
+                          size: 25,
+                          color: Colors.red,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            imagesFromPhone.replaceRange(index, index + 1, []);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            })
          
-   
+    );
+  }
+    
 
-        setState(() {
-      _storedImage = File(_imageFile.path);
-      _storedImagePath = _imageFile.path;
-    });
-    Navigator.of(context).pop();
+  Future _onAddImageClick(BuildContext context) async {
+setState(() {
+  _showSelectionDialog(context);
+});
   }
 
-  Future<void> _showSelectionDialog(BuildContext context) {
+    Future<void> _showSelectionDialog(BuildContext context) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -182,30 +244,151 @@ return _addMachinery.imageUrl = imageUrl ;
         });
   }
 
-    Future<void> _takePicture(BuildContext context) async {
+     Future<void> _takePicture(BuildContext context) async {
     final picker = ImagePicker();
-    final imageFile = await picker.getImage(
+    final picture = await picker.getImage(
       source: ImageSource.camera,
       imageQuality: 85,
       maxWidth: 600,
     );
+    _imageFile = picture;
     setState(() {
-      _storedImage = File(imageFile.path);
-      _storedImagePath = imageFile.path;
+      _storedImage = File(_imageFile.path);
+      imagesFromPhone.insert(0, _storedImage);
+      _storedImagePath = _imageFile.path;
     });
-    final appDir = await syspaths.getApplicationDocumentsDirectory();
-    final fileName = path.basename(imageFile.path);
-    final savedImage = await _storedImage.copy('${appDir.path}/$fileName'); 
-    //widget.onSelectImage();
-     Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
+
+  Future<void> _openGallery(BuildContext context) async {
+    final picker = ImagePicker();
+    var picture = await picker.getImage(source: ImageSource.gallery,
+          imageQuality: 85,
+      maxWidth: 600,);
+     _imageFile = picture;
+    
+        setState(() {
+      _storedImage = File(_imageFile.path);
+      imagesFromPhone.insert(0, _storedImage);
+      _storedImagePath = _imageFile.path;
+      
+    });
+    Navigator.of(context).pop();
+  }
+
+  
+
+  PickedFile _imageFile;
+  List<dynamic> storedImage;
+  File _storedImage;
+  String _storedImagePath;
+  var cropImageUrlString;
+String tempImage;
+  Future<String> uploadImage(dynamic storedImage) async {
+    List<dynamic> cropImageUrl = [];
+ 
+    for (int i = 0; i < storedImage.length; i++) {
+     
+     
+     
+
+      var image = storedImage[i].toString();
+      var imagePath = storedImage[i].path;
+      //String cropId = _addMachinery.cropId;
+      String userId = _addMachinery.userId;
+      String picName = 'mach' + '_' + image.split('/').last;
+      var imageUrl = '$apiurl/images/folder/$picName.jpg';
+       cropImageUrl.insert(0,imageUrl);
+       
+      final String url = '$apiurl/upload/folder';
+
+      Map<String, String> id = {'id': '$picName.jpg'};
+      Map<String, String> folderId = {'folderId': 'folder'};
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      request.files.add(await http.MultipartFile.fromPath('picture',imagePath));
+      request.fields['id'] = json.encode(id);
+      request.fields['folderId'] = json.encode(folderId);
+      var res = await request.send();
+      request.url;
+      print(res);
+       
+       cropImageUrlString = cropImageUrl.join(",");
+     
+      _addMachinery.imageUrl = cropImageUrlString;
+      
+     
+    }
+
+
+  }
+
+  Future<String> updateImage(dynamic storedImage) async {
+    
+    List<dynamic> cropImageUrl = [];
+ 
+      if (imagesFromAPI.isNotEmpty) {
+ tempImage = imagesFromAPI.reduce((value, element) {
+  return value + "," +element;
+  
+        
+});
+_imageUrlController.text.isNotEmpty && appendedImages != null ?
+       cropImageUrl.add(appendedImages) :  
+       cropImageUrl.add(tempImage);
+   } else{
+     imagesFromAPI;
+   }
+        
+       
+    
+    for (int i = 0; i < storedImage.length; i++) {
+     
+     
+     
+var image = storedImage[i].toString();
+var imagePath = storedImage[i].path;
+      //String cropId = _addMachinery.cropId;
+      String userId = _addMachinery.userId;
+      String picName = 'mach' + '_' + image.split('/').last;
+      var imageUrl = '$apiurl/images/folder/$picName.jpg';
+       cropImageUrl.insert(0,imageUrl);
+       
+      final String url = '$apiurl/upload/folder';
+
+      Map<String, String> id = {'id': '$picName.jpg'};
+      Map<String, String> folderId = {'folderId': 'folder'};
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
+
+      request.files.add(await http.MultipartFile.fromPath('picture', imagePath));
+      request.fields['id'] = json.encode(id);
+      request.fields['folderId'] = json.encode(folderId);
+      var res = await request.send();
+      request.url;
+      print(res);
+       
+       cropImageUrlString = cropImageUrl.join(",");
+     
+      _addMachinery.imageUrl = cropImageUrlString;
+      
+     
+    }
+
+//return;
+  }
+
+
+ var apiImages;
+
+
+
 
  @override
   void didChangeDependencies() {
   if(_isInit){
-      dynamic landId = _addMachinery.landId;
+      
       final routes = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
-      final dynamic refId = routes['machineryId'];
+      final dynamic refId = routes['id'];
       final dynamic type = routes['type'];
 
       if(refId != null && type == 'machinery'){
@@ -225,7 +408,11 @@ return _addMachinery.imageUrl = imageUrl ;
 
     };
     _imageUrlController.text = _addMachinery.imageUrl;
-
+  _imageUrlController.text.isNotEmpty ?
+        apiImages = _imageUrlController.text.split(",") : apiImages = null;
+        apiImages != null ? 
+        imagesFromAPI = apiImages 
+        : imagesFromAPI = [];
       }
     else if(type == 'lands') {
       _addMachinery.landId = refId;
@@ -250,8 +437,7 @@ return _addMachinery.imageUrl = imageUrl ;
     _brandFocusNode.dispose();
     _modelFocusNode.dispose();
     _descriptionFocusNode.dispose();
-    _descriptionFocusNode.dispose();
-    _supervisorFocusNode.dispose();
+     _supervisorFocusNode.dispose();
     _imageUrlFocusNode.dispose();
     super.dispose();
   }
@@ -278,7 +464,7 @@ setState(() {
 });
 if(_addMachinery.id.length > 0){
   if(_storedImage != null){
-await updateImage(_storedImagePath);}
+await updateImage(imagesFromPhone);}
 
 await Provider.of<Machinery>(context, listen: false).updateMachinery(_addMachinery.id, _addMachinery);
 await showDialog<void>(
@@ -302,7 +488,7 @@ await showDialog<void>(
 else{
   try{
     if(_storedImage != null){
-    await uploadImage(_storedImagePath);}
+    await uploadImage(imagesFromPhone);}
     
 await  Provider.of<Machinery>(context, listen: false).addMachinery(_addMachinery);
 await showDialog<void>(
@@ -791,68 +977,328 @@ Container(
 ), 
 
 
-         
-Container(
-            alignment: Alignment.topLeft,
-            margin: const EdgeInsets.only(left: 10.0),
-            child: Text('Image'),
-            ),
-          Container(
-            
-             child:  
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-          
+ Container(
+                        
+                        alignment: Alignment.topLeft,
+                        margin: const EdgeInsets.only(left: 10.0),
+                        child: Text('Images'),
+                      ),
 
-                Container(width: 100, 
-        height: 100, 
-        decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.grey),
-          borderRadius: BorderRadius.circular(10),
-          ),
-       
-        child: 
-        
-        _storedImage != null? Image.file(_storedImage,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        ) : _addMachinery.id != null ? Image.network(_imageUrlController.text) : Text('No Image Taken'),
-        alignment: Alignment.center),
-        SizedBox(width:10,),
-        Expanded(child: FlatButton.icon(
-          icon: Icon(Icons.camera),
-          label: Text('Take Pickture'),
-          textColor: Color(0xFFFF9000),
-          onPressed: () {
-          _showSelectionDialog(context);
-
-        },
-          
-
+                       _imageUrlController.text.isNotEmpty && _storedImagePath != null ? 
+                      Container(
+                        height: 700,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                           /*  Center(child: Text('Error: $_error')), */
+                                               
+                            Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: <Widget>[
+    imagesFromAPI.length == 3? 
+    new FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
         ),
-        ),
+      ),
+    ) :
+   getUpdatePicker(),
+    ],
+    ) ,
+                           Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
 
-          ],
-          ),   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    shape: BoxShape.rectangle,
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 1,
-                    )),
-                     padding: EdgeInsets.symmetric(vertical: 0.5, horizontal: 1.0),
-                      margin: EdgeInsets.all(10.0),
-),    
-            
-         
-      ],)),
-    ),
+                             Expanded(
+                              child: 
+                              
+                              newGridView(context),
+                            ) 
+
+                           
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) :
+
+                      imagesFromAPI  == null ? 
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                           getCreatePicker(),
+    Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+  ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) :
+                    imagesFromAPI.length == 3? 
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+    new FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
     ),
     
+    Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+    ])) :
+                      Container(
+                        height: 500,
+                        width: 500,
+                        child: Column(
+                          children: <Widget>[
+                         getCreatePicker(),
+                          Expanded(
+                              child: 
+                              
+                              buildGridView(context),
+                            ),
+                             ],
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            shape: BoxShape.rectangle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            )),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.5, horizontal: 1.0),
+                        margin: EdgeInsets.all(10.0),
+                      ) ,
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
+  
+  Widget getUpdatePicker(){
+      if(imagesFromAPI.length == 3){
+return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+      }
+else
+    if(imagesFromAPI == null){
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ));
   }
+  else if (imagesFromAPI.length < 3){
+    if(imagesFromPhone.length < 3 && imagesFromAPI.length <= 1 ){
+       return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ));
+
+    } else {
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+
+    }
+
+  }
+  else {
+     return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    
+  }
+  }
+
+
+
+
+
+
+  Widget getCreatePicker() {
+if(imagesFromPhone?.isEmpty ?? true){
+      return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    }
+    else if (imagesFromPhone.length < 3) {
+ return  FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.green)),
+      color: Colors.white,
+      textColor: Colors.green,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          _onAddImageClick(context);
+      },
+      child: Text(
+        "Pick Images",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+}
+    else {
+ return FlatButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.red)),
+      color: Colors.white,
+      textColor: Colors.red,
+      padding: EdgeInsets.all(8.0),
+      onPressed: () {
+          //
+      },
+      child: Text(
+        "Max 3 images can be added",
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    );
+    
+}
+  }
+  
+}
 
 
 

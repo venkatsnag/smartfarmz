@@ -21,6 +21,7 @@ String city;
 String country;
 String userVillage;
 String userCrops;
+String message;
 bool isFavorite;
 
 
@@ -40,6 +41,7 @@ bool isFavorite;
   this.country,
    this.userVillage,
   this.userCrops,
+  this.message,
    this.isFavorite = false,
   
    });
@@ -294,7 +296,7 @@ final String imageUrl = '$apiurl/images/$picName/$picName.jpg';
     );
     _items[userIndex] = updateUser;
     notifyListeners();
-    print(response.body);
+   
   }else{
     print('...');
 
@@ -328,7 +330,7 @@ void updatePassword(String userEmail, UsersItem updateUser) async {
     );
     //_items[userIndex] = updateUser;
     notifyListeners();
-    print(response.body);
+    
   }
   void resetPassword(String userEmail, UsersItem updateUser) async {
 
@@ -357,8 +359,12 @@ void updatePassword(String userEmail, UsersItem updateUser) async {
     );
     //_items[userIndex] = updateUser;
     notifyListeners();
-    print(response.body);
+    //print(response.body);
   }
+
+
+
+
 }
 
 

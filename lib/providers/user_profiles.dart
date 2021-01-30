@@ -23,6 +23,7 @@ class UserProfieItem with ChangeNotifier {
   String countryDialCode;
   String userCrops;
   String newPwd;
+  String message;
   bool isFavorite;
 
   UserProfieItem({
@@ -42,6 +43,7 @@ class UserProfieItem with ChangeNotifier {
     this.countryDialCode,
     this.userCrops,
     this.newPwd,
+     this.message,
     this.isFavorite = false,
   });
 
@@ -71,10 +73,12 @@ class UserProfiles with ChangeNotifier {
   String authToken;
   final String userId;
   String userType;
+  String userFirstName;
+  String userMobile;
   String userEmail;
 
   UserProfiles(
-      this.authToken, this.userId, this.userType, this.userEmail, this._items);
+      this.authToken, this.userId, this.userType, this.userEmail, this.userFirstName, this.userMobile, this._items);
 
   List<UserProfieItem> get items {
     return [..._items];
@@ -232,7 +236,7 @@ class UserProfiles with ChangeNotifier {
   void updateUser(String id, UserProfieItem updateUser) async {
     String picName = updateUser.userId;
     ;
-    final String imageUrl = '$apiurl/images/$picName/$picName.jpg';
+    
     final userId = updateUser.id;
     final userIndex = _items.indexWhere((user) => user.id == id);
     if (userIndex >= 0) {
@@ -254,7 +258,7 @@ class UserProfiles with ChangeNotifier {
           'emailid': updateUser.userEmail,
           'userMobile': updateUser.userMobile,
           'userId': updateUser.userId,
-          'userImageUrl': imageUrl,
+          'userImageUrl': updateUser.userImageUrl,
           'userVillage': updateUser.userVillage,
           'userState': updateUser.userState,
           'userCity': updateUser.userCity,

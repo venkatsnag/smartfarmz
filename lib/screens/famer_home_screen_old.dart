@@ -7,61 +7,97 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import '../providers/auth.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/user_profiles.dart';
 import '../widgets/app_drawer.dart';
+import '../providers/auth.dart';
 
 
-class BuyerHomeScreen extends StatelessWidget {
-static const routeName = '/buyer_home_screen';
+class FarmerHomeScreen extends StatelessWidget {
   
-  const BuyerHomeScreen({Key key, this.type}) : super(key: key);
+static const routeName = '/farmer_home_screen';
+  
+  const FarmerHomeScreen({Key key, this.type}) : super(key: key);
 
-  final BuyerHomeScreen type;
+  final FarmerHomeScreen type;
+
+  
   
   List<_Photo> _photos(BuildContext context) {
     return [
       _Photo(
         
-        assetName: 'assets/img/Indian_farmer.png',
-        navi: '/all-farmers-overview',
+        assetName: 'assets/img/watermelon.jpg',
+        navi: '/crops-overview',
         //title: Text(AppLocalizations.of(context).translate('crop_title'),),
         //navi: Navigator.pushNamed(context, CropsOverviewScreen.routeName ),
-        title: GalleryLocalizations.of(context).allFarmers,
+        title: GalleryLocalizations.of(context).myCropTitle,
+        type:'na',
        // subtitle: GalleryLocalizations.of(context).placeFlowerMarket, 
       ),
-      _Photo(
-        assetName: 'assets/img/farmer_market.png',
-        navi: '/crops-for-sale-overview',
-        title: GalleryLocalizations.of(context).allCropsForSale,
-        /* subtitle: GalleryLocalizations.of(context).placeBronzeWorks, */
-      ), 
-     /* _Photo(
-        assetName: 'assets/img/buyer.png',
-        navi: '/my_buyers_screen',
-        title: GalleryLocalizations.of(context).myBuyers,
-        subtitle: GalleryLocalizations.of(context).myBuyers,
+       _Photo(
+        assetName: 'assets/img/land.jpg',
+        navi: '/fields-overview',
+        title: GalleryLocalizations.of(context).myLands,
+        subtitle: GalleryLocalizations.of(context).myLands,
+        type:'ns',
       ),
+     _Photo(
+        assetName: 'assets/img/orchads.jpg',
+        navi: '/crops-for-sale-overview-user',
+        title: GalleryLocalizations.of(context).myCropforSale,
+        type:'ns',
+        /* subtitle: GalleryLocalizations.of(context).placeBronzeWorks, */
+      ),  
+      _Photo(
+        assetName: 'assets/img/orchads.jpg',
+        navi: '/machinery-for-sale-overview',
+        title: GalleryLocalizations.of(context).mymachineryForSale,
+        type:'sale',
+        viewer:'otherFarmer',
+        /* subtitle: GalleryLocalizations.of(context).placeBronzeWorks, */
+      ),  
+      _Photo(
+        assetName: 'assets/img/orchads.jpg',
+        navi: '/machinery-for-sale-overview',
+        title: GalleryLocalizations.of(context).mymachineryForRental,
+        type:'rental',
+        viewer:'otherFarmer',
+        /* subtitle: GalleryLocalizations.of(context).placeBronzeWorks, */
+      ),  
+    
 
       _Photo(
         assetName: 'assets/img/buyer.png',
-        navi: '/all_buyers_screen',
+        navi: '/all-farmers-overview',
         title: GalleryLocalizations.of(context).allBuyers,
         subtitle: GalleryLocalizations.of(context).allBuyers,
-      ), */
+        type:'na',
+      ), 
+
+       _Photo(
+        assetName: 'assets/img/buyer.png',
+        navi: '/my-sales-views',
+        title: GalleryLocalizations.of(context).allBuyers,
+        subtitle: GalleryLocalizations.of(context).allBuyers,
+        type:'na',
+      ), 
        
     ];
   }
   @override
   Widget build(BuildContext context) {
-      final dynamic userData = Provider.of<Auth>(context);
+    //WidgetsBinding.instance.addPostFrameCallback((_) => _photos(context));
+    final dynamic userData = Provider.of<Auth>(context);
     String userId = '${userData.userId}';
     String userLetter = '${userId[0]}';
    String userType = '${userData.userType}';
-    return Scaffold(
+    
+    return  Consumer<Auth>
+      (builder: (ctx, auth, _) => Scaffold(
       appBar: new AppBar(
         
-            title: Row(
+            title: 
+            Row(
               children: <Widget>[
                 Container(
                   child: CircleAvatar(
@@ -75,8 +111,10 @@ static const routeName = '/buyer_home_screen';
             ),
             elevation: 4.0,
           ),
-         drawer:  userType == 'Buyer'? AppDrwaer() : SizedBox(),
-      body: GridView.count(
+          drawer:  userType == 'Farmer' || userType == 'Hobby/DYIFarmer'? AppDrwaer() : SizedBox(),
+      body:
+       
+       GridView.count(
         crossAxisCount: 2,
         mainAxisSpacing: 8,
         crossAxisSpacing: 8,
@@ -98,8 +136,11 @@ static const routeName = '/buyer_home_screen';
         mainAxisAlignment: MainAxisAlignment.spaceBetween,), */
       
       ), 
-    );
+    ),);
+
+    
   }
+ 
 }
 
 class _Photo {
@@ -108,12 +149,16 @@ class _Photo {
     this.title,
     this.subtitle,
     this.navi,
+    this.type,
+    this.viewer,
   });
 
   final String assetName;
   final  String title;
   final String subtitle;
  final  String navi;
+ final  String type;
+ final  String viewer;
 }
 
 const tit = 'Text';
@@ -137,10 +182,12 @@ class _GridDemoPhotoItem extends StatelessWidget {
   _GridDemoPhotoItem({
     Key key,
     @required this.photo,
+    
    
   }) : super(key: key);
 
   final _Photo photo;
+  
   Future<void> _showSelectionDialog(BuildContext context) {
 
      // set up the button
@@ -155,14 +202,13 @@ class _GridDemoPhotoItem extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text(GalleryLocalizations.of(context).onlyBuyersTitle,),
-              content: Text(GalleryLocalizations.of(context).onlyBuyersText,),
+              title: Text(GalleryLocalizations.of(context).onlyFarmersTitle,),
+              content: Text(GalleryLocalizations.of(context).onlyFarmersText,),
     actions: [
       okButton,
     ],);
         });
   }
-
   @override
 
   Widget build(BuildContext context) {
@@ -174,10 +220,15 @@ class _GridDemoPhotoItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () async{
-          userType == 'Buyer'?
+        onTap: ()async {
           //route: _GridTitleText(photo.route);
-         await Navigator.pushNamed(context, photo.navi) : _showSelectionDialog(context) ;
+          userType == 'Farmer' ||  userType == 'Hobby/DYIFarmer'?
+          
+          await Navigator.pushNamed(context, photo.navi,
+    arguments: {
+      'type': photo.type,
+      
+    },) : _showSelectionDialog(context) ;
         },
               child:Image.asset(
           photo.assetName,
@@ -209,11 +260,12 @@ class _GridDemoPhotoItem extends StatelessWidget {
      
   }
   
-  
+
 }
 
-Widget _buildTabsBar(dynamic context) {
+ Widget _buildTabsBar(dynamic context) {
    final loadedUser = Provider.of<UserProfiles>(context, listen: false);
+
      
    Future<void> _showLogoffDialog(String message){
    return  showDialog(context: context, 
@@ -277,8 +329,7 @@ Widget _buildTabsBar(dynamic context) {
           style: TextStyle(color: Colors.white),)
           ],
           ),)  ,
-
-          auth.isAuth ?
+                auth.isAuth ?
      SingleChildScrollView(
   child:Column(
   mainAxisSize: MainAxisSize.max,
@@ -294,8 +345,6 @@ const  message = 'Logged out';
 _showLogoffDialog(message);
            },), Text('Logout',
           style: TextStyle(color: Colors.white),)
-
-          
           ],
           ),) : SizedBox(),
           
@@ -303,6 +352,8 @@ _showLogoffDialog(message);
       ),
     ),);
   }
+
+
 
 
 

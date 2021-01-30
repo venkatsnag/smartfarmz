@@ -79,7 +79,7 @@ final pestiData = Provider.of<FertiPestis>(context, listen: false);
     floatingActionButtonLocation: 
       FloatingActionButtonLocation.centerDocked,
     floatingActionButton: 
-    authData.userType == 'Farmer' ?
+    authData.userType == 'Farmer' || authData.userType == 'Hobby/DYIFarmer'?
     FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
  Navigator.of(context).pushNamed(AddFertiPestiScreen.routeName, arguments: args);

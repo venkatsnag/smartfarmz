@@ -7,14 +7,14 @@ import '../providers/crops.dart';
 import 'dart:ui';
 
 
-class CropsGrid extends StatelessWidget {
+class CropsGridOld extends StatelessWidget {
 
 
   
 
   final bool showFavs;
 
-  CropsGrid(this.showFavs);
+  CropsGridOld(this.showFavs);
   
   final noCropText = Text('No Crops Registered! Register crop');
 

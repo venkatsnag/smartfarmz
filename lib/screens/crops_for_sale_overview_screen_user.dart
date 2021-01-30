@@ -5,7 +5,7 @@ import '../widgets/badge.dart';
 import 'package:provider/provider.dart';
 import '../widgets/crop_for_sale_grid_user.dart';
 import '../l10n/gallery_localizations.dart';
-import './edit_crop_screen.dart';
+import './crop_sale_anounce_screen.dart';
 import '../providers/crops.dart';
 import '../providers/auth.dart';
 import 'package:flutter/scheduler.dart';
@@ -114,7 +114,7 @@ Widget build(BuildContext context) {
        child: auth.isAuth ?
        FloatingActionButton(
       child: const Icon(Icons.add), onPressed: () {
- Navigator.of(context).pushNamed(EditCropScreen.routeName);
+ Navigator.of(context).pushNamed(CropSaleAnouncementScreen.routeName, arguments:{'id': null, 'action': 'create'});
          // print(loadedCrops.id);
 
       },) : FloatingActionButton(onPressed: (){},),
@@ -220,7 +220,7 @@ class _BannerState extends State<Banner> {
                setState(() {
                 _displayBanner = false;
               });
-              Navigator.pushReplacementNamed(context, '/guest_home_screen');
+              Navigator.pushReplacementNamed(context, '/main_home_screen');
             },
           ),
       ],

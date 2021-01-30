@@ -21,7 +21,7 @@ static const routeName = '/guest_home_screen';
       _Photo(
         
         assetName: 'assets/img/Indian_farmer.png',
-        navi: '/farmer_home_screen',
+        navi: '/main_home_screen',
         //title: Text(AppLocalizations.of(context).translate('crop_title'),),
         //navi: Navigator.pushNamed(context, CropsOverviewScreen.routeName ),
         title: GalleryLocalizations.of(context).farmers,

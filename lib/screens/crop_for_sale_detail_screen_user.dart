@@ -15,6 +15,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 //import 'package:custom_switch/custom_switch.dart';
 import '../widgets/cust_switch.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 
 class CropForSaleDetailScreenUser extends StatefulWidget {
@@ -37,9 +38,13 @@ var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    List<String> networkImages;
+    var imageUrls;
     //final crop = Provider.of<Crops>(context);
     final cropid = ModalRoute.of(context).settings.arguments as String;
     final loadedCrops = Provider.of<Crops>(context).findById(cropid);
+    loadedCrops?.imageUrl?.isEmpty ?? true ? loadedCrops.imageUrl : imageUrls = loadedCrops.imageUrl.split(",") ;
+    networkImages = imageUrls;
     /* var imageUrl = loadedCrops.imageUrl;
      dynamic img;
     if(  imageUrl.isEmpty) {
@@ -58,18 +63,27 @@ dynamic vall = (val == 1);
             ),
             
             
-            body: Column(
+            body: 
+            new SingleChildScrollView(
+           child: new  Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-               
-            loadedCrops.imageUrl?.isEmpty ? 
+            Container(
+              width:  500,
+              height: 350,
+    child:   
+            loadedCrops?.imageUrl?.isEmpty ?? true ?
             Image.network('https://cdn.pixabay.com/photo/2015/01/21/13/21/sale-606687_960_720.png', fit:BoxFit.cover) :
-                Image.network(loadedCrops.imageUrl,
-                width: 600,            
-                height: 240,
-              fit: BoxFit.cover,
-              ),
+                 new Swiper(
+        itemBuilder: (BuildContext context,int index){
+          return new Image.network(networkImages[index],fit: BoxFit.fill,);
+        },
+        itemCount:networkImages.length,
+        pagination: new SwiperPagination(),
+        control: new SwiperControl(),
+      ),),
+     
       
                Padding(
                  padding: const EdgeInsets.all(8.0),
@@ -223,7 +237,7 @@ dynamic vall = (val == 1);
                  ), */],
                  
                
-               ),
+               ),),
                
                 
                
