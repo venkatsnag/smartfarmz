@@ -40,7 +40,7 @@ class AppDrwaer extends StatelessWidget {
       content: Text(message),
       actions: <Widget>[
         FlatButton(
-          onPressed: (){Navigator.of(ctx).pushReplacementNamed('/guest_home_screen');}, 
+          onPressed: (){Navigator.of(ctx).pushReplacementNamed('/login');}, 
           child: Text('Okay'))
       ],
       ),
@@ -147,10 +147,11 @@ class AppDrwaer extends StatelessWidget {
            leading: Icon(Icons.exit_to_app),
            title: Text('Log out'),
            onTap: (){
-             Navigator.of(context).pop();
+              
              //Navigator.of(context).pushReplacementNamed('/');
              //Navigator.of(context).pushReplacementNamed(UserSelfProfileScreen.routeName);
              Provider.of<Auth>(context, listen: false).logout();
+             //Navigator.pushNamed(context, '/login');
 const  message = 'Logged out';
 _showLogoffDialog(message);
            },

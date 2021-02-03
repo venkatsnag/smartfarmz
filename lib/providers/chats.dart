@@ -321,9 +321,9 @@ Future<void> createSupportTicket(UserProfieItem ticket) async {
    Map<String, String> headers = {"Content-type": "application/json", 'Authorization': 'Bearer $authToken'};
     final url = '$apiurl/support/ticket';
     final response = await http.post(url, body: json.encode({
-      'name': ticket.userName,
-      'email': ticket.userEmail,
-      'message': ticket.message,
+      'userName': ticket.userName,
+      'userEmail': ticket.userEmail,
+      'userMessage': ticket.message,
       
       
 

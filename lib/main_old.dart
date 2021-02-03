@@ -89,232 +89,124 @@ import './screens/my_sales_views_screen.dart';
 import './screens/main_home_screen.dart';
 import './screens/contact_us_pop_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:workmanager/workmanager.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import './providers/apiClass.dart';
-import './providers/chats.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:cron/cron.dart';
 
 
-
-
-
-Future<void> main() async {
-  
-  //SharedPreferences.setMockInitialValues({});
-tz.initializeTimeZones();
-//Cros job to push notifications
-final cron = Cron();
-  cron.schedule(Schedule.parse('00 10 */5 * *'), () async {
-   
-    await userAndNotifc();
-  });
-
-  cron.schedule(Schedule.parse('00 10 */7 * *'), () async {
-   
-    await fetchCommonNotification();
-  });
- 
-    runApp(SmartFarmzApp());
-    
-     
-}
-
-final apiurl = AppApi.api;
-
-
-var authToken;
-var userId;
-var userName;
-void userAndNotifc() async{
-    
-// Get locale timezone
-final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-   tz.setLocalLocation(tz.getLocation(currentTimeZone));
-  
-  Future.delayed(Duration.zero,() {
-   fetchNotification();
-    
-  });
-}
-
-
-
-void fetchNotification() async {
-
-  
-  const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-final IOSInitializationSettings initializationSettingsIOS =
-      IOSInitializationSettings(
-    requestSoundPermission: false,
-    requestBadgePermission: false,
-    requestAlertPermission: false,
-    //onDidReceiveLocalNotification: onDidReceiveLocalNotification,
-  );
-  final MacOSInitializationSettings initializationSettingsMacOS =
-      MacOSInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false);
-final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-    macOS: initializationSettingsMacOS);
-  
-   await flp.initialize(initializationSettings, onSelectNotification: onSelectNotification);
-    
-
-   Map<String, String> headers = {'Authorization': 'Bearer $authToken'}; 
-   var response= await http.get('$apiurl/users/pushNotifications/$userId',  headers: headers,);
-   print("here================");
-   print(response);
-    List<dynamic> decoded = json.decode(response.body);
-    for(var i = 0; i< decoded.length; i++) {
-    final data = decoded[i];
-      if (data['seen']  == 0) {
-        showNotification('$userName', data['message'], flp);
-      } else {
-      print("no messgae");
-      }
-   }
-
-
-    return;
- 
-}
-
-
-void fetchCommonNotification() async {
-
-  
-  const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-final IOSInitializationSettings initializationSettingsIOS =
-      IOSInitializationSettings(
-    requestSoundPermission: false,
-    requestBadgePermission: false,
-    requestAlertPermission: false,
-    //onDidReceiveLocalNotification: onDidReceiveLocalNotification,
-  );
-  final MacOSInitializationSettings initializationSettingsMacOS =
-      MacOSInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false);
-final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-    macOS: initializationSettingsMacOS);
-  
-   await flp.initialize(initializationSettings,);
-    
-
-   Map<String, String> headers = {'Authorization': 'Bearer $authToken'}; 
-   var commonResponse= await http.get('$apiurl/users/CommonPushNotifications/common',  headers: headers,);
-   print("here================");
-   print(commonResponse);
-    List<dynamic> commonNot = json.decode(commonResponse.body);
-    //for(var i = 0; i< decoded.length; i++) {
-    final notific = commonNot[0];
-      if (notific['seen']  == 0) {
-        showNotification('$userName', notific['message'], flp);
-      } else {
-      print("no messgae");
-      }
-   // } 
-    return ;
-
-
- 
-}
-
-
-
-
-
-// flutter local notification setup
-void showNotification( u, v, flp) async {
-  const AndroidNotificationDetails android = AndroidNotificationDetails(
-      'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
-      //priority: Priority.High, 
-      importance: Importance.max,
-      
-      );
-  var iOS = IOSNotificationDetails();
-  var platform = NotificationDetails(android: android,
-   iOS : iOS);
-  await flp.zonedSchedule(0, 'Hey  $u', '$v', 
-  tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)), 
-  platform, 
-  uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-  androidAllowWhileIdle: true,
-      payload: 'VIS \n $v',
-       
-      );
-
-     
-       final NotificationAppLaunchDetails notificationAppLaunchDetails =
-    await flp.getNotificationAppLaunchDetails(); 
-}
-
-Future onSelectNotification(String payload) async {
-
-
-}
-   
-
-class SmartFarmzApp extends StatefulWidget {
-  @override
-  
-
-  _SmartFarmzAppState createState() => _SmartFarmzAppState();
-}
-  final FlutterLocalNotificationsPlugin flp =
+/* final FlutterLocalNotificationsPlugin flp =
     FlutterLocalNotificationsPlugin();
-
-
-
-
-
-class _SmartFarmzAppState extends State<SmartFarmzApp> {
-
+final apiurl = AppApi.api;
+String authToken;
+String userId;
 void getUserdata()async {
   final prefs = await SharedPreferences.getInstance();
   final extractedUserData =
-  json.decode(prefs.getString('loginUserData')) as Map<String, Object>;
+  json.decode(prefs.getString('userData')) as Map<String, Object>;
  final user = extractedUserData['userId'];
  final token = extractedUserData['token'];
- final username = extractedUserData['firstName'];
-setState(() {
+ 
         authToken = token;
     userId = user;
-    userName = username;
-    }); 
-      
 
 
 }
 
-
-
-
-  void initState()  {
-     super.initState();
-       //Initialize timezone for notification scheduling
- getUserdata();
- //userAndNotifc();
+void callbackDispatcher() {
  
-  }
+  Workmanager.executeTask((task, inputData) async {
+  final prefs = await SharedPreferences.getInstance();
+  final extractedUserData =
+  json.decode(prefs.getString('userData')) as Map<String, Object>;
+ final user = extractedUserData['userId'];
+ final token = extractedUserData['token'];
+  Map<String, String> headers = {'Authorization': 'Bearer $authToken'};
+const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings(
+    requestSoundPermission: false,
+    requestBadgePermission: false,
+    requestAlertPermission: false,
+    //onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+  );
+  final MacOSInitializationSettings initializationSettingsMacOS =
+      MacOSInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false);
+final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+    macOS: initializationSettingsMacOS);
+  
+    flp.initialize(initializationSettings);
 
+
+
+    
+   var response= await http.get('$apiurl/users/pushNotifications/$userId',  headers: headers,);
+   print("here================");
+   print(response);
+    var convert = json.decode(response.body);
+      if (convert['status']  == true) {
+        showNotification(convert['msg'], flp);
+      } else {
+      print("no messgae");
+      }
+
+
+    return Future.value(true);
+  });
+}
+
+//this is the name given to the background fetch
+final simplePeriodicTask = "simplePeriodicTask";
+// flutter local notification setup
+void showNotification( v, flp) async {
+  const AndroidNotificationDetails android = AndroidNotificationDetails(
+      'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+      //priority: Priority.High, 
+      importance: Importance.max);
+  var iOS = IOSNotificationDetails();
+  var platform = NotificationDetails(android: android);
+  await flp.show(0, 'Virtual intelligent solution', '$v', platform,
+      payload: 'VIS \n $v');
+}
+  void fetchNotification() async {
+  //await getUserdata();
+  await Workmanager.initialize(callbackDispatcher, isInDebugMode: true); //to true if still in testing lev turn it to false whenever you are launching the app
+  await Workmanager.registerPeriodicTask("5", simplePeriodicTask,
+      existingWorkPolicy: ExistingWorkPolicy.replace,
+      frequency: Duration(minutes: 15),//when should it check the link
+      initialDelay: Duration(seconds: 5),//duration before showing the notification
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ));
+ 
+}
+
+
+void main() async {
+  //SharedPreferences.setMockInitialValues({});
+ await getUserdata();
+  WidgetsFlutterBinding.ensureInitialized();
+    
+    fetchNotification();
+    runApp(MyApp());
+}
+ */
+
+
+
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
 
   @override
-
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -429,15 +321,6 @@ setState(() {
           create: (_) => Images(null, null, []),
           update: (ctx, auth, previusImages) => Images(auth.token, auth.userId,
               previusImages == null ? [] : previusImages.items),
-        ),
-
-        ChangeNotifierProxyProvider<Auth, Chats>(
-          create: (_) => Chats(null, null, null, []),
-          update: (ctx, auth, previusChats) => Chats(
-             auth.token,
-              auth.userId,
-              auth.userType,
-              previusChats == null ? [] : previusChats.items),
         ),
       ],
       child: Consumer<Auth>(
@@ -588,4 +471,3 @@ setState(() {
     );
   }
 }
-

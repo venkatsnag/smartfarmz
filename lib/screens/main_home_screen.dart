@@ -11,6 +11,10 @@ import '../providers/user_profiles.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/auth.dart';
 import '../providers/apiClass.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 
 
 class MainHomePage extends StatefulWidget {
@@ -22,6 +26,9 @@ class MainHomePage extends StatefulWidget {
 
 class _MainHomePageState extends State<MainHomePage> {
 
+
+final FlutterLocalNotificationsPlugin flp =
+    FlutterLocalNotificationsPlugin();
    final apiurl = AppApi.api;
     var userType;
     var userId;
@@ -139,9 +146,83 @@ class _MainHomePageState extends State<MainHomePage> {
         _isLoading = false;
       });
     });
+
+    
+         //fetchNotification();  
     super.initState();
   }
+
+ 
+/* 
+//this is the name given to the background fetch
+final simplePeriodicTask = "simplePeriodicTask";
+// flutter local notification setup
+void showNotification( v, flp) async {
+  const AndroidNotificationDetails android = AndroidNotificationDetails(
+      'channel id', 'channel NAME', 'CHANNEL DESCRIPTION',
+      //priority: Priority.High, 
+      importance: Importance.max);
+  var iOS = IOSNotificationDetails();
+  var platform = NotificationDetails(android: android);
+  await flp.show(0, 'Virtual intelligent solution', '$v', platform,
+      payload: 'VIS \n $v');
+}
+
+void fetchNotification() async {
   
+  await Workmanager.initialize(callbackDispatcher, isInDebugMode: true); //to true if still in testing lev turn it to false whenever you are launching the app
+  await Workmanager.registerPeriodicTask("5", simplePeriodicTask,
+      existingWorkPolicy: ExistingWorkPolicy.replace,
+      frequency: Duration(minutes: 15),//when should it check the link
+      initialDelay: Duration(seconds: 5),//duration before showing the notification
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ));
+ 
+}
+
+void callbackDispatcher() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager.executeTask((task, inputData) async {
+
+const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings(
+    requestSoundPermission: false,
+    requestBadgePermission: false,
+    requestAlertPermission: false,
+    //onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+  );
+  final MacOSInitializationSettings initializationSettingsMacOS =
+      MacOSInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false);
+final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+    macOS: initializationSettingsMacOS);
+    flp.initialize(initializationSettings);
+
+    
+  
+    
+   var response= await http.get('$apiurl/users/pushNotifications/chai1');
+   print("here================");
+   print(response);
+    var convert = json.decode(response.body);
+      if (convert['status']  == true) {
+        showNotification(convert['msg'], flp);
+      } else {
+      print("no messgae");
+      }
+
+
+    return Future.value(true);
+  });
+} */
+
   @override
   Widget build(BuildContext context) {
     //WidgetsBinding.instance.addPostFrameCallback((_) => refreshUserprofileDialogue());
@@ -686,7 +767,21 @@ GridTile(
           style: TextStyle(color: Colors.white),)
           ],
           ),)  ,
-                auth.isAuth ?
+          SingleChildScrollView(
+  child:Column(
+  mainAxisSize: MainAxisSize.max,
+         children: <Widget>[
+         IconButton(icon:FaIcon(MaterialIcons.contact_phone, color: Colors.grey[100]
+          
+          ),
+          onPressed: (){
+           Navigator.pushNamed(context, '/contact');
+          },), 
+          Text('Contact Us',
+          style: TextStyle(color: Colors.white),)
+          ],
+          ),), 
+                /* auth.isAuth ?
      SingleChildScrollView(
   child:Column(
   mainAxisSize: MainAxisSize.max,
@@ -703,21 +798,8 @@ _showLogoffDialog(message);
            },), Text('Logout',
           style: TextStyle(color: Colors.white),)
           ],
-          ),) : SizedBox(),
-             /*  SingleChildScrollView(
-  child:Column(
-  mainAxisSize: MainAxisSize.max,
-         children: <Widget>[
-         IconButton(icon:FaIcon(MaterialIcons.contact_phone, color: Colors.grey[100]
-          
-          ),
-          onPressed: (){
-           Navigator.pushNamed(context, '/contact');
-          },), 
-          Text('Contact Us',
-          style: TextStyle(color: Colors.white),)
-          ],
-          ),), */
+          ),) : SizedBox(), */
+              
           
        ],
       ),
