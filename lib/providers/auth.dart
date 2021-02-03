@@ -155,6 +155,7 @@ class Auth with ChangeNotifier {
         },
       );
       prefs.setString('userData', userData);
+      prefs.setString('loginUserData', userData);
  return responseData;
       
     }

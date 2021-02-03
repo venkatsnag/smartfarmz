@@ -9,11 +9,9 @@ import './edit_crop_screen.dart';
 import '../providers/crops.dart';
 import '../providers/auth.dart';
 import 'package:flutter/scheduler.dart';
-import '../screens/login_page.dart';
-import '../screens/main_home_screen.dart';
-import '../providers/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import '../providers/apiClass.dart';
 
 
 
@@ -31,13 +29,17 @@ class CropsOverviewScreen extends StatefulWidget {
 
 class _CropsOverviewScreenState extends State<CropsOverviewScreen> {
 
+  
+
+   final apiurl = AppApi.api;
+
   var _showOnlyFavorites = false;
 var _isInit = true;
 var _isLoading = false;
   @override
   void initState() {
      _refreshCrops(context);
-       
+
     super.initState();
   }
 
@@ -48,7 +50,20 @@ var _isLoading = false;
   await Provider.of<Crops>(context).fetchAndFetchCropWithLand(landId, type);
 
 } */
-
+/* void showNotification() async {
+const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.max,
+        //priority: Priority.high,
+        showWhen: false);
+const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+await flutterLocalNotificationsPlugin.show(
+    0, 'plain title', 'plain body', platformChannelSpecifics,
+    payload: 'item x');
+    await flutterLocalNotificationsPlugin.cancelAll();
+      } */
   @override
   void didChangeDependencies()  {
 
@@ -62,6 +77,8 @@ var _isLoading = false;
   await Provider.of<Crops>(context,listen: false).fetchCrops(true);
      //}
   }
+
+
 
   
   @override

@@ -6,6 +6,9 @@ import '../providers/apiClass.dart';
 import '../providers/chats.dart';
 import '../providers/user_profiles.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class  ContactUsItem {
 String name;
@@ -27,13 +30,21 @@ String message;
 
 class ContactUsPop extends StatefulWidget {
   static const routeName = '/contact';
+
+
+
+
+
+
   @override
   _ContactUsPopState createState() => _ContactUsPopState();
 }
 
 class _ContactUsPopState extends State<ContactUsPop> {
   final apiurl = AppApi.api;
-
+var authToken;
+var userId;
+var userName;
   var _contactUs = UserProfieItem(
     userName: '',
     userEmail: '',
@@ -49,6 +60,30 @@ class _ContactUsPopState extends State<ContactUsPop> {
  var _isInit = true;
   var _isLoading = false;
   final _formKey = GlobalKey<FormState>();
+
+  void getUserdata()async {
+  final prefs = await SharedPreferences.getInstance();
+  final extractedUserData =
+  json.decode(prefs.getString('loginUserData')) as Map<String, Object>;
+ final user = extractedUserData['userId'];
+ final token = extractedUserData['token'];
+ final username = extractedUserData['firstName'];
+setState(() {
+        authToken = token;
+    userId = user;
+    userName = username;
+    }); 
+      
+
+
+}
+  void initState()  {
+     super.initState();
+       //Initialize timezone for notification scheduling
+ getUserdata();
+ //userAndNotifc();
+ 
+  }
 
 Future<void> _saveForm() async {
     final isValid = _formKey.currentState.validate();
@@ -68,7 +103,7 @@ Future<void> _saveForm() async {
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text("Sucessful"),
-            content: Text("You have message is sucessfully sent."),
+            content: Text("Your message is sucessfully sent. We will get back to you soon."),
             actions: <Widget>[
               FlatButton(
                 child: Text("Okay"),
@@ -109,28 +144,33 @@ Future<void> _saveForm() async {
 
   @override
   Widget build(BuildContext context) {
+    
    return Scaffold(
       appBar: AppBar(
         title: Text("Contact Us"),
       ),
       body: 
+      Padding(
+   padding: EdgeInsets.only(left: 50.0, right: 50.0),
+   child:
                    AlertDialog(
+                     insetPadding: EdgeInsets.symmetric(horizontal: 5),
                     content: Stack(
                       overflow: Overflow.visible,
                       children: <Widget>[
-                        Positioned(
+                      /*   Positioned(
                           right: -30.0,
                           top: -30.0,
                           child: InkResponse(
                             onTap: () {
-                              Navigator.of(context, rootNavigator: true).pop();
+                              Navigator.pop(context);
                             },
                             child: CircleAvatar(
                               child: Icon(Icons.close),
                               backgroundColor: Colors.red,
                             ),
                           ),
-                        ),
+                        ), */
                         Form(
                           key: _formKey,
                           child: SingleChildScrollView(
@@ -164,9 +204,11 @@ Future<void> _saveForm() async {
           Flexible(
             child: new 
                                 TextFormField(
+                                   initialValue:userName,
                                    decoration: InputDecoration(
                // icon: Icon(Icons.account_circle),
                 hintText: 'Name',
+               
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                 border: OutlineInputBorder(
@@ -347,6 +389,7 @@ Future<void> _saveForm() async {
                       ],
                     ),
                   ),
+   ),
                
     );
   }
